@@ -1,0 +1,37 @@
+{
+  "name": "mapbender-3d",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@deck.gl/core": "^9.4.1",
+    "@deck.gl/geo-layers": "^9.4.1",
+    "@deck.gl/mapbox": "^9.4.1",
+    "@deck.gl/react": "^9.4.1",
+    "@loaders.gl/tiles": "^4.5.4",
+    "@mapcomponents/deck-gl": "^1.8.20",
+    "@mapcomponents/react-maplibre": "^1.8.20",
+    "deck.gl": "^9.4.1",
+    "maplibre-gl": "^6.17.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@typescript-eslint/eslint-plugin": "^8.72.1",
+    "@typescript-eslint/parser": "^8.72.1",
+    "@vitejs/plugin-react": "^6.2.1",
+    "eslint": "^10.14.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.7",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.6"
+  }
+}

@@ -14,7 +14,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Mapbender\\Mapbender3DBundle\\": "src/Mapbender/Mapbender3DBundle"
+            "Mapbender\\Mapbender3DBundle\\": "src-php/Mapbender/Mapbender3DBundle"
         }
     }
 }

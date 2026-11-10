@@ -1,0 +1,35 @@
+.mb-element-3dview {
+    display: inline-block;
+}
+
+.mb-element-3dview .mb-3dview-toggle {
+    min-width: 48px;
+}
+
+.mb-element-3dview .mb-3dview-toggle.is-active {
+    font-weight: 700;
+}
+
+.mb-element-3dview .mb-3dview-panel {
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #fff;
+}
+
+.mb-element-3dview .mb-3dview-panel.-hidden {
+    display: none;
+}
+
+.mb-element-3dview .mb-3dview-frame {
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    border: 0;
+    width: 100vw;
+    height: 100vh;
+}
