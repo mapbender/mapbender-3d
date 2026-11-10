@@ -13,6 +13,6 @@ class Mapbender3DBundle extends Bundle
     {
         $configLocator = new FileLocator(__DIR__ . '/Resources/config');
         $loader = new XmlFileLoader($container, $configLocator);
-        $loader->load('services.xml');
+        $loader->load('elements.xml');
     }
 }

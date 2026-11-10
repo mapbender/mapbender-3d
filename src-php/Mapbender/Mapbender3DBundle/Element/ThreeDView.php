@@ -37,7 +37,7 @@ class ThreeDView extends AbstractElementService implements FloatableElement
 
     public static function getFormTemplate()
     {
-        return '@Mapbender3DBundle/Resources/views/ElementAdmin/3dviewadmin.html.twig';
+        return '@Mapbender3D/ElementAdmin/3dviewadmin.html.twig';
     }
 
     public function getRequiredAssets(Element $element)
@@ -62,7 +62,7 @@ class ThreeDView extends AbstractElementService implements FloatableElement
     {
         $config = $element->getConfiguration();
 
-        $view = new TemplateView('@Mapbender3DBundle/Resources/views/Element/3dview.html.twig');
+        $view = new TemplateView('@Mapbender3D/Element/3dview.html.twig');
         $view->attributes['class'] = 'mb-element mb-element-3dview';
         $view->attributes['title'] = $element->getTitle() ?: self::getClassTitle();
         $view->variables['label'] = $config['buttonLabel'] ?: '3D';
