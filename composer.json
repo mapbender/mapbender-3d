@@ -1,0 +1,20 @@
+{
+    "name": "mapbender/mapbender-3d",
+    "description": "Mapbender extension for 3D visualization of geospatial data using MapComponents",
+    "keywords": ["mapbender", "3d","mapcomponents"],
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {"name": "Thorsten Hack"},
+        {"name": "Martin Alzueta"}
+    ],
+    "require": {
+        "php": ">=8.2",
+        "mapbender/mapbender": "^5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Mapbender\\Mapbender3DBundle\\": "src/Mapbender/Mapbender3DBundle"
+        }
+    }
+}
