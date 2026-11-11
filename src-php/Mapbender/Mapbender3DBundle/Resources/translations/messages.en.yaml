@@ -4,4 +4,3 @@ mapbender.3d:
         description: 3D-View as an overlay to the 2d map with synchronisation.
         admin:
             button_label: Button Label
-            iframe_url: URL to the 3d application

@@ -13,10 +13,6 @@
     class Mb3DView extends MapbenderElement {
         constructor(configuration, $element) {
             super(configuration, $element);
-            this.options = {
-                buttonLabel: '3D',
-                iframeUrl: '/bundles/mapbender3d/iframe/index.html'
-            };
             this.mbMap = null;
             this.$toggle = null;
             this.$panel = null;
@@ -28,9 +24,7 @@
             this.closeSyncTimer = null;
             this.mapViewChangeProxy = null;
             this.messageProxy = null;
-        }
 
-        _create() {
             Mapbender.elementRegistry.waitReady('.mb-element-map').then(
                 (mbMap) => this._setup(mbMap)
             );

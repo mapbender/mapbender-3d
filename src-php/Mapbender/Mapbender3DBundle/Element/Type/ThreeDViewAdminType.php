@@ -18,10 +18,6 @@ class ThreeDViewAdminType extends AbstractType
                 'required' => false,
                 'label' => 'mb.3d.element.admin.button_label',
             ])
-            ->add('iframeUrl', TextType::class, [
-                'required' => false,
-                'label' => 'mb.3d.element.admin.iframe_url',
-            ])
         ;
     }
 }

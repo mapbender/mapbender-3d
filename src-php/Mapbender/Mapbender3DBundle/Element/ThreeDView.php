@@ -8,10 +8,18 @@ use Mapbender\CoreBundle\Component\ElementBase\FloatableElement;
 use Mapbender\CoreBundle\Entity\Element;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 use Mapbender\Mapbender3DBundle\Element\Type\ThreeDViewAdminType;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 #[AutoconfigureTag('mapbender.element')]
 class ThreeDView extends AbstractElementService implements FloatableElement
 {
+    public function __construct(
+        private readonly string $iframeUrl,
+        private readonly RequestStack $requestStack,
+    )
+    {
+    }
+
     public static function getClassTitle()
     {
         return 'mapbender.3d.element.title';
@@ -31,8 +39,20 @@ class ThreeDView extends AbstractElementService implements FloatableElement
     {
         return [
             'buttonLabel' => '3D',
-            'iframeUrl' => '/bundles/mapbender3d/iframe/index.html',
         ];
+    }
+
+    public function getClientConfiguration(Element $element)
+    {
+        $iframeUrl = $this->iframeUrl;
+        if (!str_starts_with($iframeUrl, 'http')) {
+            $basePath = $this->requestStack->getCurrentRequest()->getBasePath();
+            $iframeUrl = $basePath . "/" . (str_starts_with($iframeUrl, '/') ? substr($iframeUrl, 1) : $iframeUrl);
+        }
+
+        $config = parent::getClientConfiguration($element);
+        $config['iframeUrl'] = $iframeUrl;
+        return $config;
     }
 
     public static function getFormTemplate()

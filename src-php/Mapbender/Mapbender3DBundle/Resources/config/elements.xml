@@ -2,9 +2,14 @@
 <container xmlns="http://symfony.com/schema/dic/services"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <parameters>
+        <parameter key="mapbender.3d.iframe_url">bundles/mapbender3d/iframe/index.html</parameter>
+    </parameters>
     <services>
         <service id="Mapbender\Mapbender3DBundle\Element\ThreeDView" class="Mapbender\Mapbender3DBundle\Element\ThreeDView">
             <tag name="mapbender.element" />
+            <argument>%mapbender.3d.iframe_url%</argument>
+            <argument type="service" id="Symfony\Component\HttpFoundation\RequestStack"/>
         </service>
     </services>
 </container>
