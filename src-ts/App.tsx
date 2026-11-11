@@ -5,14 +5,14 @@ import {
     MapLibreMap,
     MlNavigationTools,
     useMap,
-    useMapState,
 } from "@mapcomponents/react-maplibre";
-import { Ml3DTileLayer } from "@mapcomponents/deck-gl";
 import { Button, Typography } from "@mui/material";
-import ThreeDTilesLayer from "./components/ThreeDTilesLayer";
+import ConfiguredTilesLayers, { sourceKey } from "./components/ConfiguredTilesLayers";
+import type { LayerStatus, LayerStatusHandler } from "./components/ConfiguredTilesLayers";
+import LayerTree from "./components/LayerTree";
+import useLayersConfig from "./config/useLayersConfig";
 import Light from "./Light";
 
-const tilesMinZoom = 15;
 const MESSAGE_CHANNEL = "mb-3dview";
 const MESSAGE_TYPES = {
     INIT_VIEW: "initView",
@@ -70,11 +70,15 @@ const primaryButtonStyle = {
 };
 
 const App = () => {
-    const [showTiles, setShowTiles] = useState(false);
     const mapHook = useMap({ mapId: "bonn-map" });
-    const mapState = useMapState({ watch: { viewport: true } });
     const [lastPosition, setLastPosition] = useState<Position | null>(null);
-    const [showMesh, setShowMesh] = useState(false);
+    const { config, replaceConfig, error } = useLayersConfig();
+    const [statuses, setStatuses] = useState<Record<string, LayerStatus>>({});
+    const onStatus: LayerStatusHandler = useCallback((source, state, message) => {
+        const key = sourceKey(source);
+        setStatuses((previous) => previous[key]?.state === state && previous[key]?.message === message
+            ? previous : { ...previous, [key]: { state, message } });
+    }, []);
 
     const postViewChanged = useCallback(() => {
         if (!mapHook.map) return;
@@ -96,18 +100,6 @@ const App = () => {
         );
         setLastPosition(_lastPosition);
     }, [mapHook.map]);
-
-    // listen to Zoom Level
-    useEffect(() => {
-        if (!mapHook.map) return;
-        if (!mapState.viewport?.zoom) return;
-
-        if (mapState.viewport?.zoom > tilesMinZoom && !showTiles) {
-            setShowTiles(true);
-        } else if (mapState.viewport?.zoom <= tilesMinZoom && showTiles) {
-            setShowTiles(false);
-        }
-    }, [mapState.viewport, mapHook.map, showTiles]);
 
     useEffect(() => {
         if (!mapHook.map) return;
@@ -186,7 +178,7 @@ const App = () => {
                         style: "https://wms.wheregroup.com/tileserver/style/osm-liberty.json",
                         center: [9.9843, 53.543328],
                         zoom: 16,
-                        maxZoom: 19,
+                        maxZoom: 22,
                         pitch: 65,
                         bearing: 20,
                         attributionControl: {
@@ -201,17 +193,9 @@ const App = () => {
                         right: 0,
                     }}
                 />
-                {showMesh ? (
-                    <Ml3DTileLayer
-                        data="https://3dtiles.wheregroup.com/tileset.json"
-                        id="mesh-layer"
-                    />
-                ) : (
-                    <>
-                    <ThreeDTilesLayer key="tiles3d" />
-                    <Light />
-                    </>
-                )}
+                <ConfiguredTilesLayers config={config} onStatus={onStatus} />
+                <LayerTree config={config} onChange={replaceConfig} error={error} statuses={statuses} />
+                <Light />
                 <MlNavigationTools
                     showZoomButtons
                     sx={{ marginBottom: "65px", right: "40px" }}
@@ -242,20 +226,6 @@ const App = () => {
                    <Typography variant="body2"> 2D</Typography>
                 </Button>
 
-                <Button
-                    variant="contained"
-                    size="small"
-                    sx={{
-                        ...primaryButtonStyle,
-                        top: "66px",
-                        zIndex: 100,
-                        position: "absolute",
-                        right: "36px",
-                    }}
-                    onClick={() => setShowMesh(!showMesh)}
-                >
-                    {showMesh ? "3D-Modell zeigen" : "3D-Luftbild zeigen"}
-                </Button>
             </div>
         </>
     );

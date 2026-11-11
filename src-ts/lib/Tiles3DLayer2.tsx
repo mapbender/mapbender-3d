@@ -18,6 +18,7 @@ import {
   FilterContext,
   GetPickingInfoParams,
   Layer,
+  LayerContext,
   LayersList,
   log,
   PickingInfo,
@@ -132,8 +133,9 @@ export default class Tile3DLayer2<
 
   updateState({props, oldProps, changeFlags}: UpdateParameters<this>): void {
     if (props.data && props.data !== oldProps.data) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      this._loadTileset(props.data);
+      void this._loadTileset(props.data).catch((error: unknown) => {
+        this.raiseError(error instanceof Error ? error : new Error(String(error)), 'loading tileset');
+      });
     }
     if (changeFlags.viewportChanged) {
       const {activeViewports} = this.state;
@@ -149,6 +151,11 @@ export default class Tile3DLayer2<
       }
       this.setNeedsUpdate();
     }
+  }
+
+  finalizeState(context: LayerContext): void {
+    this.state.tileset3d?.destroy();
+    super.finalizeState(context);
   }
 
   activateViewport(viewport: Viewport): void {
@@ -220,6 +227,7 @@ export default class Tile3DLayer2<
     }
 
     const tilesetJson = await load(actualTilesetUrl, loader, options.loadOptions);
+    if (!this.internalState) return;
     const tileset3d = new Tileset3D(tilesetJson, {
       onTileLoad: this._onTileLoad.bind(this),
       onTileUnload: this._onTileUnload.bind(this),

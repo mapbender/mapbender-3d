@@ -1,0 +1,36 @@
+{
+  "layers": [
+    {
+      "id": "buildings",
+      "name": "LOD2 Buildings",
+      "type": "LOD2",
+      "url": "https://sgx.geodatenzentrum.de/gdz_basemapde_3d_gebaeude/lod2_4326_null.json",
+      "visible": true,
+      "opacity": 1,
+      "style": {
+        "surfaceProperty": "surface",
+        "buildingIdProperty": "gml_id",
+        "roofColor": [255, 80, 80],
+        "wallColor": [170, 170, 170],
+        "selectionColor": [91, 154, 227]
+      }
+    },
+    {
+      "id": "textured-mesh",
+      "name": "WhereGroup Textured Mesh",
+      "type": "textured-mesh",
+      "url": "https://3dtiles.wheregroup.com/tileset.json",
+      "visible": false,
+      "opacity": 1
+    },
+    {
+      "id": "pointcloud",
+      "name": "Point Cloud",
+      "type": "pointcloud",
+      "url": "http://localhost:5173/pointclouds/tileset.json",
+      "visible": false,
+      "opacity": 1,
+      "pointSize": 2
+    }
+  ]
+}

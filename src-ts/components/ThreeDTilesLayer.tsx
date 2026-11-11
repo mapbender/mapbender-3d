@@ -7,13 +7,12 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import Paper from "@mui/material/Paper";
-import { useMap } from "@mapcomponents/react-maplibre";
-//import {Ml3DTileLayer} from "@mapcomponents/deck-gl";
+import type { BuildingSource } from "../config/layers";
+import type { LayerStatusHandler } from "./ConfiguredTilesLayers";
 
-type Props = {};
+type Props = { source: BuildingSource; onStatus: LayerStatusHandler };
 
-export default function ThreeDTilesLayer({}: Props) {
-  const mapHook = useMap({ mapId: "bonn-map" });
+export default function BuildingTilesLayer({ source, onStatus }: Props) {
 
   const [colorVersion, setColorVersion] = useState(0);
   const selectedRef = useRef<string | null>(null);
@@ -25,26 +24,27 @@ export default function ThreeDTilesLayer({}: Props) {
   const getFeatureColor = useCallback(
     (featureId: number, tile: Tile3D): Color => {
       const props = tile.content?.propertyTable?.[featureId];
-      const gmlId = props?.gml_id as string | undefined;
-      const surface = (props?.surface as string)?.toLowerCase();
+      const gmlId = props?.[source.style.buildingIdProperty];
+      const surface = String(props?.[source.style.surfaceProperty] ?? "").toLowerCase();
 
-      if (selectedRef.current && gmlId === selectedRef.current) {
-        return [91, 154, 227];
+      if (selectedRef.current && String(gmlId) === selectedRef.current) {
+        return source.style.selectionColor;
       }
       if (surface === "roof") {
-        return [255, 80, 80];
+        return source.style.roofColor;
       }
-      return [170, 170, 170];
+      return source.style.wallColor;
     },
-    [],
+    [source.style],
   );
 
   const onClick = useCallback((info: unknown) => {
     const pickInfo = info as Enhanced3DTilePickingInfo;
     if (!pickInfo.picked) return;
 
-    const gmlId = pickInfo.featureProperties?.gml_id as string | undefined;
-    if (gmlId) {
+    const rawId = pickInfo.featureProperties?.[source.style.buildingIdProperty];
+    if (rawId !== undefined && rawId !== null) {
+      const gmlId = String(rawId);
       const isDeselect = selectedRef.current === gmlId;
       selectedRef.current = isDeselect ? null : gmlId;
       setSelectedProps(
@@ -52,30 +52,34 @@ export default function ThreeDTilesLayer({}: Props) {
       );
       setColorVersion((v) => v + 1);
     }
-  }, []);
+  }, [source.style.buildingIdProperty]);
 
   return (
     <>
       <Ml3DTileLayer
-        id="3d-tiles-layer"
-        data="https://sgx.geodatenzentrum.de/gdz_basemapde_3d_gebaeude/lod2_4326_null.json"
+        id={source.id}
+        mapId="bonn-map"
+        data={source.url}
+        opacity={source.opacity}
+        onError={(error) => { onStatus(source, "error", error.message); return true; }}
         pickable={true}
         getFeatureColor={getFeatureColor}
         onClick={onClick}
         updateTrigger={colorVersion}
-        beforeId="water_name_line"
-        onTileLoad={()=>  mapHook.map?.getLayer("building-3d")?.setLayoutProperty("visibility", "none")}
+        onTilesetLoad={() => onStatus(source, "loading")}
+        onTileLoad={() => onStatus(source, "loaded")}
+        onTileError={(_tile, message) => onStatus(source, "error", String(message))}
       />
 
-      {selectedProps && (
+      {selectedProps && source.opacity > 0 && (
         <Box
           sx={{
             position: "absolute",
             bottom: 70,
-            left: "45%",
+            left: 12,
             zIndex: 100,
-            width: 280,
-            maxHeight: "60vh",
+            width: "min(280px, calc(100vw - 24px))",
+            maxHeight: "35vh",
             overflowY: "auto",
           }}
         >
