@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState } from "react";
-import { Enhanced3DTilePickingInfo } from "./lib/Tiles3DLayer2";
-import Ml3DTileLayer from "./lib/Ml3DTilesLayer";
+import { Enhanced3DTilePickingInfo } from "../lib/Tiles3DLayer2";
+import Ml3DTileLayer from "../lib/Ml3DTilesLayer";
 import type { Tile3D } from "@loaders.gl/tiles";
 import type { Color } from "@deck.gl/core";
 import Box from "@mui/material/Box";
@@ -8,6 +8,7 @@ import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import Paper from "@mui/material/Paper";
 import { useMap } from "@mapcomponents/react-maplibre";
+//import {Ml3DTileLayer} from "@mapcomponents/deck-gl";
 
 type Props = {};
 
@@ -33,7 +34,7 @@ export default function ThreeDTilesLayer({}: Props) {
       if (surface === "roof") {
         return [255, 80, 80];
       }
-      return [235, 235, 235];
+      return [170, 170, 170];
     },
     [],
   );
@@ -57,7 +58,7 @@ export default function ThreeDTilesLayer({}: Props) {
     <>
       <Ml3DTileLayer
         id="3d-tiles-layer"
-        data="https://sgx.geodatenzentrum.de/gdz_basemapde_3d_gebaeude/lod2_4978_null.json"
+        data="https://sgx.geodatenzentrum.de/gdz_basemapde_3d_gebaeude/lod2_4326_null.json"
         pickable={true}
         getFeatureColor={getFeatureColor}
         onClick={onClick}

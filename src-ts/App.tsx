@@ -9,7 +9,7 @@ import {
 } from "@mapcomponents/react-maplibre";
 import { Ml3DTileLayer } from "@mapcomponents/deck-gl";
 import { Button, Typography } from "@mui/material";
-import ThreeDTilesLayer from "./ThreeDTilesLayer";
+import ThreeDTilesLayer from "./components/ThreeDTilesLayer";
 import Light from "./Light";
 
 const tilesMinZoom = 15;

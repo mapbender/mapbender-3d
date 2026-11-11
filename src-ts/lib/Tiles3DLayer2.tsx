@@ -42,6 +42,19 @@ export type Enhanced3DTilePickingInfo = PickingInfo & {
 
 const SINGLE_DATA = [0];
 
+// deck.gl's MeshLayer passes vec4(0) as vertex color to luma's pbr_filterColor, which now multiplies by it (alpha 0).
+class FeatureMeshLayer<DataT = any> extends MeshLayer<DataT> {
+  static layerName = 'FeatureMeshLayer';
+
+  getShaders() {
+    const shaders = super.getShaders();
+    return {
+      ...shaders,
+      fs: shaders.fs.replace('vColor * pbr_filterColor(vec4(0))', 'pbr_filterColor(vColor)'),
+    };
+  }
+}
+
 export type Tile3DLayer2Props<DataT = unknown> = _Tile3DLayer2Props<DataT> &
   CompositeLayerProps;
 
@@ -413,7 +426,7 @@ export default class Tile3DLayer2<
       (!getFeatureColor && oldLayer && oldLayer.props.mesh) ||
       new Geometry({topology: 'triangle-list', attributes: mergedAttributes, indices});
 
-    const SubLayerClass = this.getSubLayerClass('mesh', MeshLayer);
+    const SubLayerClass = this.getSubLayerClass('mesh', FeatureMeshLayer);
     return new SubLayerClass(
       this.getSubLayerProps({id: 'mesh'}),
       {
