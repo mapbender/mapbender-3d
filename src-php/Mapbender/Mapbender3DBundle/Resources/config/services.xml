@@ -1,0 +1,46 @@
+<?xml version="1.0" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="mapbender.source.threed_tiles.class">Mapbender\Mapbender3DBundle\DataSource\ThreeDTilesDataSource</parameter>
+    </parameters>
+    <services>
+        <service id="mapbender.source.threed_tiles" class="%mapbender.source.threed_tiles.class%">
+            <tag name="mapbender.datasource" />
+            <argument type="service" id="mapbender.source.threed_tiles.config_generator" />
+            <argument type="service" id="mapbender.source.threed_tiles.instance_factory" />
+            <argument type="service" id="mapbender.source.threed_tiles.loader" />
+            <argument type="service" id="mapbender.source.threed_tiles.renderer" />
+        </service>
+        <service id="mapbender.source.threed_tiles.config_generator"
+                 lazy="true"
+                 class="Mapbender\Mapbender3DBundle\DataSource\ThreeDTilesConfigGenerator">
+            <argument type="service" id="Doctrine\ORM\EntityManagerInterface" />
+            <argument type="service" id="twig" />
+            <argument type="service" id="router" />
+        </service>
+        <service id="mapbender.source.threed_tiles.instance_factory"
+                 class="Mapbender\Mapbender3DBundle\DataSource\ThreeDTilesInstanceFactory"
+                 lazy="true">
+            <argument type="service" id="Doctrine\ORM\EntityManagerInterface" />
+        </service>
+        <service id="mapbender.source.threed_tiles.loader"
+                 class="Mapbender\Mapbender3DBundle\DataSource\ThreeDTilesLoader" lazy="true">
+            <argument type="service" id="mapbender.http_transport.service" />
+            <argument type="service" id="translator" />
+            <argument type="service" id="Doctrine\ORM\EntityManagerInterface" />
+        </service>
+        <service id="mapbender.source.threed_tiles.renderer"
+                 class="Mapbender\Mapbender3DBundle\DataSource\ThreeDTilesRenderer"
+                 lazy="true">
+        </service>
+        <service id="mapbender.source.threed_tiles.instance_type"
+                 class="Mapbender\Mapbender3DBundle\DataSource\Type\ThreeDTilesInstanceType">
+            <tag name="form.type" />
+            <argument type="service" id="translator" />
+        </service>
+
+    </services>
+</container>

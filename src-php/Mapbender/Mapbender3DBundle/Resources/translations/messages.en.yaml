@@ -4,3 +4,6 @@ mapbender.3d:
         description: 3D-View as an overlay to the 2d map with synchronisation.
         admin:
             button_label: Button Label
+    3dtiles:
+        admin:
+          json_url: URL to 3D-Tiles-JSON

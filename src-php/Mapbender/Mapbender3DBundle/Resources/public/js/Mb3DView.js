@@ -46,7 +46,7 @@
             this.messageProxy = this._handleFrameMessage.bind(this);
             window.addEventListener('message', this.messageProxy);
 
-            this._trigger('ready');
+            Mapbender.elementRegistry.markReady(this);
         }
 
         _destroy() {
