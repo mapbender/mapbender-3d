@@ -7,7 +7,7 @@ use Mapbender\CoreBundle\Component\Source\SourceInstanceConfigGenerator;
 use Mapbender\CoreBundle\Component\Source\SourceInstanceFactory;
 use Mapbender\CoreBundle\Component\Source\SourceLoader;
 use Mapbender\PrintBundle\Component\LayerRenderer;
-use Mapbender\ThreeDTilesBundle\Entity\ThreeDTilesSource;
+use Mapbender\Mapbender3DBundle\Entity\ThreeDTilesSource;
 
 class ThreeDTilesDataSource extends DataSource
 {
@@ -64,7 +64,7 @@ class ThreeDTilesDataSource extends DataSource
 
     public function getMetadataBackendTemplate(): ?string
     {
-        return null;
+        return '@Mapbender3D/DataSource/metadata-backend.html.twig';
     }
 
     public function getAccentColor(): string

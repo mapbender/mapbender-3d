@@ -7,11 +7,9 @@ use Mapbender\Component\Transport\HttpTransportInterface;
 use Mapbender\CoreBundle\Component\Source\SourceLoader;
 use Mapbender\CoreBundle\Component\Source\StyleableSourceLoaderInterface;
 use Mapbender\CoreBundle\Entity\Source;
-use Mapbender\CoreBundle\Entity\Style;
 use Mapbender\Exception\Loader\ServerResponseErrorException;
-use Mapbender\ThreeDTilesBundle\Entity\ThreeDTilesInstance;
-use Mapbender\ThreeDTilesBundle\Entity\ThreeDTilesSource;
-use Mapbender\ThreeDTilesBundle\Form\Type\ThreeDTilesSourceType;
+use Mapbender\Mapbender3DBundle\Entity\ThreeDTilesSource;
+use Mapbender\Mapbender3DBundle\DataSource\Type\ThreeDTilesSourceType;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ThreeDTilesLoader extends SourceLoader implements StyleableSourceLoaderInterface
@@ -38,10 +36,6 @@ class ThreeDTilesLoader extends SourceLoader implements StyleableSourceLoaderInt
         $url = is_array($formData) ? $formData['jsonUrl'] : $formData->getJsonUrl();
         $url = rtrim((string)$url, '/');
 
-        if (!str_ends_with($url, '/collections')) {
-            $url = $url . '/collections';
-        }
-
         $response = $this->httpTransport->getUrl($url);
 
         if (!$response->isOk()) {
@@ -54,20 +48,18 @@ class ThreeDTilesLoader extends SourceLoader implements StyleableSourceLoaderInt
             throw new ServerResponseErrorException($this->translator->trans('mb.vectortiles.admin.error.no_json'), 401);
         }
 
-        $version = null;
-        if (preg_match('#/v(\d+(?:\.\d+)*)#', $url, $matches)) {
-            $version = 'v' . $matches[1];
-        }
-
-        $baseUrl = str_replace('/collections', '', $url);
-        $source->setJsonUrl($baseUrl);
-        $source->setTitle($json['title'] ?? 'OGC API - Features Source');
+        $source->setJsonUrl($url);
+        $source->setTitle($json['title'] ?? basename($url, '.json'));
         $source->setDescription($json['description'] ?? '');
-        $source->setAttribution($json['attribution'] ?? '');
     }
 
     public function getFormType(): string
     {
         return ThreeDTilesSourceType::class;
+    }
+
+    public function loadStylesForSource(Source $source): void
+    {
+
     }
 }

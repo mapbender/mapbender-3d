@@ -6,8 +6,8 @@ use Doctrine\ORM\EntityManagerInterface;
 use Mapbender\CoreBundle\Component\Source\SourceInstanceConfigGenerator;
 use Mapbender\CoreBundle\Entity\Application;
 use Mapbender\CoreBundle\Entity\SourceInstance;
-use Mapbender\ThreeDTilesBundle\Entity\ThreeDTilesInstance;
-use Mapbender\ThreeDTilesBundle\Entity\ThreeDTilesSource;
+use Mapbender\Mapbender3DBundle\Entity\ThreeDTilesInstance;
+use Mapbender\Mapbender3DBundle\Entity\ThreeDTilesSource;
 use Symfony\Component\Routing\RouterInterface;
 use Twig\Environment;
 

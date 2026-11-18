@@ -1,1 +1,20 @@
-Hallo Welt
+{% extends "@MapbenderManager/Repository/instance.html.twig" %}
+
+{% block form_main2 %}
+    {{ parent() }}
+    <div class="row g-3 mb-3">
+        <div class="col">
+            {{ form_widget(form.selected) }}
+        </div>
+        <div class="col">
+            {{ form_widget(form.allowSelected) }}
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    {{ parent() }}
+    <script type="text/javascript" src="{{ asset('bundles/mapbendermanager/js/application-edit.js') }}"></script>
+    <script src="{{ asset('bundles/mapbendermanager/js/style-utils.js') }}"></script>
+    <script src="{{ asset('bundles/mapbendercore/widgets/tabcontainer.js') }}"></script>
+{% endblock %}

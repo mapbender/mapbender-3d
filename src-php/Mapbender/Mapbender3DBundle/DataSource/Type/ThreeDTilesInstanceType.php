@@ -1,6 +1,6 @@
 <?php
 
-namespace Mapbender\ThreeDTilesBundle\Form\Type;
+namespace Mapbender\Mapbender3DBundle\DataSource\Type;
 
 use Mapbender\CoreBundle\Element\Type\MapbenderTypeTrait;
 use Mapbender\ManagerBundle\Form\Type\SourceInstanceType;

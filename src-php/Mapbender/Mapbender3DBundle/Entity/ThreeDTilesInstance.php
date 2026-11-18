@@ -1,6 +1,6 @@
 <?php
 
-namespace Mapbender\ThreeDTilesBundle\Entity;
+namespace Mapbender\Mapbender3DBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Mapbender\CoreBundle\Entity\SourceInstance;

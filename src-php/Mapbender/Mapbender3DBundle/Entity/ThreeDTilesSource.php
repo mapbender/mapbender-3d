@@ -1,6 +1,6 @@
 <?php
 
-namespace Mapbender\ThreeDTilesBundle\Entity;
+namespace Mapbender\Mapbender3DBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -66,5 +66,10 @@ class ThreeDTilesSource extends Source
     public function getDisplayUrl(): ?string
     {
         return $this->jsonUrl;
+    }
+
+    public function getVersion(): ?string
+    {
+        return "-";
     }
 }

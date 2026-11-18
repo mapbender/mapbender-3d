@@ -9,12 +9,10 @@ use Mapbender\CoreBundle\Entity\SourceInstance;
 use Mapbender\ManagerBundle\Component\Exchange\EntityPool;
 use Mapbender\ManagerBundle\Component\Exchange\ImportState;
 use Mapbender\ManagerBundle\Component\ImportHandler;
-use Mapbender\ThreeDTilesBundle\Entity\ThreeDTilesInstance;
-use Mapbender\ThreeDTilesBundle\Entity\ThreeDTilesInstanceLayer;
-use Mapbender\ThreeDTilesBundle\Entity\ThreeDTilesLayerSource;
-use Mapbender\ThreeDTilesBundle\Entity\ThreeDTilesSource;
-use Mapbender\ThreeDTilesBundle\Entity\ThreeDTilesVariant;
-use Mapbender\ThreeDTilesBundle\Form\Type\ThreeDTilesInstanceType;
+use Mapbender\Mapbender3DBundle\DataSource\Type\ThreeDTilesInstanceType;
+use Mapbender\Mapbender3DBundle\Entity\ThreeDTilesInstance;
+use Mapbender\Mapbender3DBundle\Entity\ThreeDTilesSource;
+use Mapbender\Mapbender3DBundle\Entity\ThreeDTilesVariant;
 
 class ThreeDTilesInstanceFactory extends SourceInstanceFactory
 {

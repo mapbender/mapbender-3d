@@ -5,5 +5,11 @@ mapbender.3d:
         admin:
             button_label: Button Label
     3dtiles:
+        no-layers: No layers available for this source.
         admin:
           json_url: URL to 3D-Tiles-JSON
+          variant: Variant
+        variant:
+            lod2: LOD2
+            textured_mesh: Textured Mesh
+            pointcloud: Point Cloud
