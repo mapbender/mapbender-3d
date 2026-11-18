@@ -25,7 +25,8 @@ class ThreeDTilesConfigGenerator extends SourceInstanceConfigGenerator
     {
         return match ($type) {
             'js' => [
-                '@Mapbender3DBundle/Resources/public/js/three_d_tiles/geosource.3d_tiles.js',
+                '@Mapbender3DBundle/Resources/public/js/three_d_tiles/geosource.3d_tiles.source.js',
+                '@Mapbender3DBundle/Resources/public/js/three_d_tiles/geosource.3d_tiles.source-layer.js',
             ],
             'css' => [
             ],
@@ -47,10 +48,8 @@ class ThreeDTilesConfigGenerator extends SourceInstanceConfigGenerator
             'variant' => $source->getVariant()->value,
             'treeOptions' => [
                 'selected' => $sourceInstance->getSelected(),
-                'toggle' => $sourceInstance->getToggle(),
                 'allow' => [
                     'selected' => $sourceInstance->getAllowSelected(),
-                    'toggle' => $sourceInstance->getAllowToggle(),
                 ],
             ],
         ];

@@ -1,5 +1,17 @@
 class ThreeDTilesSource extends Mapbender.Source {
 
+    constructor(definition) {
+        definition.children = [{
+            ...definition,
+            options: {
+                ...definition.options,
+                // prefixing id, otherwise an id clash between another layer and the source id is possible
+                id: '3d_' + definition.options.id,
+            }
+        }];
+        super(definition);
+    }
+
     createNativeLayers(srsName, mapOptions) {
         return [];
     }
@@ -27,4 +39,4 @@ class ThreeDTilesSource extends Mapbender.Source {
 
 window.Mapbender = Mapbender || {};
 window.Mapbender.ThreeDTilesSource = ThreeDTilesSource;
-Mapbender.Source.typeMap['3d_tiles'] = ThreeDTilesSource;
+Mapbender.Source.typeMap['3dtiles'] = ThreeDTilesSource;
