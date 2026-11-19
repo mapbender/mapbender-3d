@@ -77,9 +77,4 @@ class ThreeDTilesDataSource extends DataSource
     {
         return self::TYPE;
     }
-
-    public function getDefaultModel(): ?Source
-    {
-        return new ThreeDTilesSource();
-    }
 }

@@ -8,8 +8,8 @@ use Mapbender\CoreBundle\Component\Source\SourceLoader;
 use Mapbender\CoreBundle\Component\Source\StyleableSourceLoaderInterface;
 use Mapbender\CoreBundle\Entity\Source;
 use Mapbender\Exception\Loader\ServerResponseErrorException;
-use Mapbender\Mapbender3DBundle\Entity\ThreeDTilesSource;
 use Mapbender\Mapbender3DBundle\DataSource\Type\ThreeDTilesSourceType;
+use Mapbender\Mapbender3DBundle\Entity\ThreeDTilesSource;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ThreeDTilesLoader extends SourceLoader implements StyleableSourceLoaderInterface
@@ -20,6 +20,21 @@ class ThreeDTilesLoader extends SourceLoader implements StyleableSourceLoaderInt
         protected EntityManagerInterface $em,
     )
     {
+    }
+
+    public function getDefaultModel(): ?Source
+    {
+        return new ThreeDTilesSource();
+    }
+
+    public function getFormTemplate(bool $forReload, ?Source $source): string
+    {
+        return '@Mapbender3D/DataSource/edit-source.html.twig';
+    }
+
+    public function getFormTemplateVariables(bool $forReload, ?Source $source): array
+    {
+        return ['reload' => $forReload];
     }
 
     public function loadSource(mixed $formData): Source
