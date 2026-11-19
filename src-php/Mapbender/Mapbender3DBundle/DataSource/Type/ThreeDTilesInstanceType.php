@@ -4,9 +4,14 @@ namespace Mapbender\Mapbender3DBundle\DataSource\Type;
 
 use Mapbender\CoreBundle\Element\Type\MapbenderTypeTrait;
 use Mapbender\ManagerBundle\Form\Type\SourceInstanceType;
+use Mapbender\Mapbender3DBundle\Entity\ThreeDTilesInstance;
+use Mapbender\Mapbender3DBundle\Entity\ThreeDTilesSource;
+use Mapbender\Mapbender3DBundle\Entity\ThreeDTilesVariant;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ColorType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -25,6 +30,11 @@ class ThreeDTilesInstanceType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        /** @var ThreeDTilesInstance $instance */
+        $instance = $options['data'];
+        /** @var ThreeDTilesSource $source */
+        $source = $instance->getSource();
+
         $builder
             ->add('opacity', IntegerType::class, [
                 'required' => false,
@@ -38,6 +48,56 @@ class ThreeDTilesInstanceType extends AbstractType
                 'required' => false,
                 'label' => 'mb.ogcapifeatures.admin.layer.selected',
             ]);
+
+        if ($source->getVariant() === ThreeDTilesVariant::LOD2) {
+            $this->addLod2Fields($builder, $source);
+        }
+
+        if ($source->getVariant() === ThreeDTilesVariant::POINT_CLOUD) {
+            $this->addPointCloudFields($builder, $source);
+        }
+    }
+
+    private function addLod2Fields(FormBuilderInterface $builder, ThreeDTilesSource $source): void
+    {
+        $builder
+            ->add('roofColor', ColorType::class, [
+                'required' => false,
+                'label' => 'mapbender.3d.3dtiles.admin.roof_color',
+                'attr' => [
+                    'data-variant' => ThreeDTilesVariant::LOD2->value,
+                    'placeholder' => $source->getRoofColor(),
+                ],
+            ])
+            ->add('wallColor', ColorType::class, [
+                'required' => false,
+                'label' => 'mapbender.3d.3dtiles.admin.wall_color',
+                'attr' => [
+                    'data-variant' => ThreeDTilesVariant::LOD2->value,
+                    'placeholder' => $source->getWallColor(),
+                ],
+            ])
+            ->add('selectionColor', ColorType::class, [
+                'required' => false,
+                'label' => 'mapbender.3d.3dtiles.admin.selection_color',
+                'attr' => [
+                    'data-variant' => ThreeDTilesVariant::LOD2->value,
+                    'placeholder' => $source->getSelectionColor(),
+                ],
+            ]);
+    }
+
+    private function addPointCloudFields(FormBuilderInterface $builder, ThreeDTilesSource $source): void
+    {
+        $builder->add('pointSize', IntegerType::class, [
+            'required' => false,
+            'label' => 'mapbender.3d.3dtiles.admin.point_size',
+            'attr' => [
+                'data-variant' => ThreeDTilesVariant::POINT_CLOUD->value,
+                'placeholder' => $source->getPointSize(),
+            ],
+        ]);
     }
 
 }
+

@@ -46,6 +46,12 @@ class ThreeDTilesConfigGenerator extends SourceInstanceConfigGenerator
             'title' => $sourceInstance->getTitle() ?: $source->getTitle(),
             'opacity' => ($sourceInstance->getOpacity() ?? 100) / 100.0,
             'variant' => $source->getVariant()->value,
+            'surfaceProperty' => $source->getSurfaceProperty(),
+            'buildingIdProperty' => $source->getBuildingIdProperty(),
+            'roofColor' => $sourceInstance->getRoofColor() ?? $source->getRoofColor(),
+            'wallColor' => $sourceInstance->getWallColor() ?? $source->getWallColor(),
+            'selectionColor' => $sourceInstance->getSelectionColor() ?? $source->getSelectionColor(),
+            'pointSize' => $sourceInstance->getPointSize() ?? $source->getPointSize(),
             'treeOptions' => [
                 'selected' => $sourceInstance->getSelected(),
                 'allow' => [

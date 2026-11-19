@@ -6,6 +6,7 @@ use Mapbender\CoreBundle\Component\Source\DataSource;
 use Mapbender\CoreBundle\Component\Source\SourceInstanceConfigGenerator;
 use Mapbender\CoreBundle\Component\Source\SourceInstanceFactory;
 use Mapbender\CoreBundle\Component\Source\SourceLoader;
+use Mapbender\CoreBundle\Entity\Source;
 use Mapbender\PrintBundle\Component\LayerRenderer;
 use Mapbender\Mapbender3DBundle\Entity\ThreeDTilesSource;
 
@@ -75,5 +76,10 @@ class ThreeDTilesDataSource extends DataSource
     public function getEntityTypeDiscriminator(): string
     {
         return self::TYPE;
+    }
+
+    public function getDefaultModel(): ?Source
+    {
+        return new ThreeDTilesSource();
     }
 }

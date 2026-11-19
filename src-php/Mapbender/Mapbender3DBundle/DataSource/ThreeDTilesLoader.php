@@ -51,6 +51,24 @@ class ThreeDTilesLoader extends SourceLoader implements StyleableSourceLoaderInt
         $source->setJsonUrl($url);
         $source->setTitle($json['title'] ?? basename($url, '.json'));
         $source->setDescription($json['description'] ?? '');
+        $source->setSurfaceProperty(is_array($formData)
+            ? $formData['surfaceProperty'] ?? $source->getSurfaceProperty()
+            : $formData->getSurfaceProperty());
+        $source->setBuildingIdProperty(is_array($formData)
+            ? $formData['buildingIdProperty'] ?? $source->getBuildingIdProperty()
+            : $formData->getBuildingIdProperty());
+        $source->setRoofColor(is_array($formData)
+            ? $formData['roofColor'] ?? $source->getRoofColor()
+            : $formData->getRoofColor());
+        $source->setWallColor(is_array($formData)
+            ? $formData['wallColor'] ?? $source->getWallColor()
+            : $formData->getWallColor());
+        $source->setSelectionColor(is_array($formData)
+            ? $formData['selectionColor'] ?? $source->getSelectionColor()
+            : $formData->getSelectionColor());
+        $source->setPointSize(is_array($formData)
+            ? $formData['pointSize'] ?? $source->getPointSize()
+            : $formData->getPointSize());
     }
 
     public function getFormType(): string

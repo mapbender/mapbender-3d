@@ -23,6 +23,18 @@ class ThreeDTilesInstance extends SourceInstance
     #[ORM\Column(type: 'boolean', nullable: true)]
     protected ?bool $selected = true;
 
+    #[ORM\Column(name: 'roof_color', type: 'string', nullable: true)]
+    protected ?string $roofColor = null;
+
+    #[ORM\Column(name: 'wall_color', type: 'string', nullable: true)]
+    protected ?string $wallColor = null;
+
+    #[ORM\Column(name: 'selection_color', type: 'string', nullable: true)]
+    protected ?string $selectionColor = null;
+
+    #[ORM\Column(name: 'point_size', type: 'integer', nullable: true)]
+    protected ?int $pointSize = null;
+
     public function getSource(): Source
     {
         return $this->source;
@@ -66,6 +78,46 @@ class ThreeDTilesInstance extends SourceInstance
     public function setSelected(?bool $selected): void
     {
         $this->selected = $selected;
+    }
+
+    public function getRoofColor(): ?string
+    {
+        return $this->roofColor;
+    }
+
+    public function setRoofColor(?string $roofColor): void
+    {
+        $this->roofColor = $roofColor;
+    }
+
+    public function getWallColor(): ?string
+    {
+        return $this->wallColor;
+    }
+
+    public function setWallColor(?string $wallColor): void
+    {
+        $this->wallColor = $wallColor;
+    }
+
+    public function getSelectionColor(): ?string
+    {
+        return $this->selectionColor;
+    }
+
+    public function setSelectionColor(?string $selectionColor): void
+    {
+        $this->selectionColor = $selectionColor;
+    }
+
+    public function getPointSize(): ?int
+    {
+        return $this->pointSize;
+    }
+
+    public function setPointSize(?int $pointSize): void
+    {
+        $this->pointSize = $pointSize;
     }
 
     public function __clone()
