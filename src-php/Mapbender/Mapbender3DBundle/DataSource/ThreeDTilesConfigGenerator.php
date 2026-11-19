@@ -8,6 +8,7 @@ use Mapbender\CoreBundle\Entity\Application;
 use Mapbender\CoreBundle\Entity\SourceInstance;
 use Mapbender\Mapbender3DBundle\Entity\ThreeDTilesInstance;
 use Mapbender\Mapbender3DBundle\Entity\ThreeDTilesSource;
+use Mapbender\Mapbender3DBundle\Entity\ThreeDTilesVariant;
 use Symfony\Component\Routing\RouterInterface;
 use Twig\Environment;
 
@@ -46,12 +47,6 @@ class ThreeDTilesConfigGenerator extends SourceInstanceConfigGenerator
             'title' => $sourceInstance->getTitle() ?: $source->getTitle(),
             'opacity' => ($sourceInstance->getOpacity() ?? 100) / 100.0,
             'variant' => $source->getVariant()->value,
-            'surfaceProperty' => $source->getSurfaceProperty(),
-            'buildingIdProperty' => $source->getBuildingIdProperty(),
-            'roofColor' => $sourceInstance->getRoofColor() ?? $source->getRoofColor(),
-            'wallColor' => $sourceInstance->getWallColor() ?? $source->getWallColor(),
-            'selectionColor' => $sourceInstance->getSelectionColor() ?? $source->getSelectionColor(),
-            'pointSize' => $sourceInstance->getPointSize() ?? $source->getPointSize(),
             'treeOptions' => [
                 'selected' => $sourceInstance->getSelected(),
                 'allow' => [
@@ -59,6 +54,18 @@ class ThreeDTilesConfigGenerator extends SourceInstanceConfigGenerator
                 ],
             ],
         ];
+
+        if ($source->getVariant() === ThreeDTilesVariant::LOD2) {
+            $config['options']['surfaceProperty'] = $source->getSurfaceProperty();
+            $config['options']['buildingIdProperty'] = $source->getBuildingIdProperty();
+            $config['options']['roofColor'] = $sourceInstance->getRoofColor() ?? $source->getRoofColor();
+            $config['options']['wallColor'] = $sourceInstance->getWallColor() ?? $source->getWallColor();
+            $config['options']['selectionColor'] = $sourceInstance->getSelectionColor() ?? $source->getSelectionColor();
+        }
+
+        if ($source->getVariant() === ThreeDTilesVariant::POINT_CLOUD) {
+            $config['options']['pointSize'] = $sourceInstance->getPointSize() ?? $source->getPointSize();
+        }
 
         return $config;
     }

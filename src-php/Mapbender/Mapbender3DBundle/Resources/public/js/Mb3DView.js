@@ -8,6 +8,7 @@
         READY: 'ready',
         VIEW_CHANGED: 'viewChanged',
         EXIT_3D: "exit3d",
+        UPDATE_LAYERTREE: "updateLayerTree",
     };
 
     class Mb3DView extends MapbenderElement {
@@ -23,7 +24,16 @@
             this.applyOnNext3dView = false;
             this.closeSyncTimer = null;
             this.mapViewChangeProxy = null;
+            this.mapSourceChangeProxy = null;
             this.messageProxy = null;
+            this.resendLayertreeOn = [
+                'mbmapsourceadded',
+                'mbmapsourcechanged',
+                'mbmapsourceremoved',
+                'mbmapsourcelayersreordered',
+                'mbmapsourcesreordered',
+                'mbmapsourcelayerremoved'
+            ].join(' ');
 
             Mapbender.elementRegistry.waitReady('.mb-element-map').then(
                 (mbMap) => this._setup(mbMap)
@@ -39,9 +49,6 @@
             this.$toggle.text(this.options.buttonLabel || '3D');
             this.$toggle.on('click', this._toggle.bind(this));
             this.$frame.on('load', this._handleFrameLoad.bind(this));
-
-            this.mapViewChangeProxy = this._handleMapViewChanged.bind(this);
-            this.mbMap.element.on('mbmapviewchanged', this.mapViewChangeProxy);
 
             this.messageProxy = this._handleFrameMessage.bind(this);
             window.addEventListener('message', this.messageProxy);
@@ -77,9 +84,11 @@
             this.$toggle.attr('aria-pressed', 'true').addClass('is-active');
             this.$panel.removeClass('-hidden');
             this.$toggle.addClass("hidden");
+            this._addListeners();
 
             if (!this.frameLoaded) {
                 this.$frame.attr('src', this.options.iframeUrl);
+                this._postLayertree();
             } else {
                 this._sendInitView();
             }
@@ -94,7 +103,25 @@
             this.$panel.addClass('-hidden');
             this.$toggle.removeClass("hidden");
 
+            this._removeListeners();
             this._request3dViewForCloseSync();
+        }
+
+        _addListeners() {
+            this.mapSourceChangeProxy = this._postLayertree.bind(this);
+            this.mbMap.element.on(this.resendLayertreeOn, this.mapSourceChangeProxy);
+
+            this.mapViewChangeProxy = this._handleMapViewChanged.bind(this);
+            this.mbMap.element.on('mbmapviewchanged', this.mapViewChangeProxy);
+        }
+
+        _removeListeners() {
+            if (this.mapSourceChangeProxy) {
+                this.mbMap.element.off(this.resendLayertreeOn, this.mapSourceChangeProxy);
+            }
+            if (this.mapViewChangeProxy) {
+                this.mbMap.element.off('mbmapviewchanged', this.mapViewChangeProxy);
+            }
         }
 
         _handleFrameLoad() {
@@ -185,6 +212,24 @@
                 return;
             }
             this._postToFrame(MESSAGE_TYPES.INIT_VIEW, payload);
+            this._postLayertree();
+        }
+
+        _postLayertree() {
+            const layertree = this._getLayertreePayload();
+            console.log(layertree);
+            this._postToFrame(MESSAGE_TYPES.UPDATED_LAYERTREE, layertree);
+        }
+
+        _getLayertreePayload() {
+            return Mapbender.Model.sourceTree.map((source) => {
+                if (!source.getSelected()) return null;
+                if (!source.supportsMode('3d')) return null;
+                const root = source.getRootLayer();
+               return {
+                   id: source.id,
+               }
+            }).filter((source) => source !== null);
         }
 
         _collect2dViewFor3d() {

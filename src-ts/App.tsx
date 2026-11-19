@@ -19,6 +19,7 @@ const MESSAGE_TYPES = {
     REQUEST_VIEW: "requestView",
     READY: "ready",
     VIEW_CHANGED: "viewChanged",
+    UPDATE_LAYERTREE: "updateLayerTree",
     EXIT_3D: "exit3d",
 } as const;
 
@@ -28,6 +29,29 @@ type ViewPayload = {
     bearing?: number;
     pitch?: number;
 };
+
+type UpdateLayertreePayload = {
+    id: string | number;
+    name: string;
+    type: "3dtiles" | "wms" | "vector_tiles";
+    // for 3d tiles only
+    variant?: "lod2" | "textured-mesh" | "pointcloud";
+    // for wms only
+    layers?: string[];
+    url: string;
+    visible: boolean;
+    opacity: number;
+    // for 3d tiles variant lod2 only
+    style?: {
+        surfaceProperty: string;
+        buildingIdProperty: string;
+        roofColor: string;
+        wallColor: string;
+        selectionColor: string;
+    };
+    // for 3d tiles variant pointcloud only
+    pointSize?: number;
+}[];
 
 type BridgeMessage = {
     channel?: string;
