@@ -61,28 +61,31 @@ class ThreeDTilesInstanceType extends AbstractType
     private function addLod2Fields(FormBuilderInterface $builder, ThreeDTilesSource $source): void
     {
         $builder
-            ->add('roofColor', ColorType::class, [
+            ->add('roofColor', TextType::class, [
                 'required' => false,
                 'label' => 'mapbender.3d.3dtiles.admin.roof_color',
                 'attr' => [
                     'data-variant' => ThreeDTilesVariant::LOD2->value,
                     'placeholder' => $source->getRoofColor(),
+                    'class' => '-js-init-colorpicker',
                 ],
             ])
-            ->add('wallColor', ColorType::class, [
+            ->add('wallColor', TextType::class, [
                 'required' => false,
                 'label' => 'mapbender.3d.3dtiles.admin.wall_color',
                 'attr' => [
                     'data-variant' => ThreeDTilesVariant::LOD2->value,
                     'placeholder' => $source->getWallColor(),
+                    'class' => '-js-init-colorpicker',
                 ],
             ])
-            ->add('selectionColor', ColorType::class, [
+            ->add('selectionColor', TextType::class, [
                 'required' => false,
                 'label' => 'mapbender.3d.3dtiles.admin.selection_color',
                 'attr' => [
                     'data-variant' => ThreeDTilesVariant::LOD2->value,
                     'placeholder' => $source->getSelectionColor(),
+                    'class' => '-js-init-colorpicker',
                 ],
             ]);
     }

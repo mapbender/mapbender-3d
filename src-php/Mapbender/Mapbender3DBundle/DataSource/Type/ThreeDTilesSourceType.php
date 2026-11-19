@@ -2,6 +2,7 @@
 
 namespace Mapbender\Mapbender3DBundle\DataSource\Type;
 
+use Mapbender\CoreBundle\Element\Type\PaintType;
 use Mapbender\ManagerBundle\Form\Type\SourceType;
 use Mapbender\Mapbender3DBundle\Entity\ThreeDTilesVariant;
 use Symfony\Component\Form\Extension\Core\Type\ColorType;
@@ -37,25 +38,28 @@ class ThreeDTilesSourceType extends SourceType
                     'data-variant' => ThreeDTilesVariant::LOD2->value,
                 ],
             ])
-            ->add('roofColor', ColorType::class, [
+            ->add('roofColor', TextType::class, [
                 'required' => false,
                 'label' => 'mapbender.3d.3dtiles.admin.roof_color',
                 'attr' => [
                     'data-variant' => ThreeDTilesVariant::LOD2->value,
+                    'class' => '-js-init-colorpicker',
                 ],
             ])
-            ->add('wallColor', ColorType::class, [
+            ->add('wallColor', TextType::class, [
                 'required' => false,
                 'label' => 'mapbender.3d.3dtiles.admin.wall_color',
                 'attr' => [
                     'data-variant' => ThreeDTilesVariant::LOD2->value,
+                    'class' => '-js-init-colorpicker',
                 ],
             ])
-            ->add('selectionColor', ColorType::class, [
+            ->add('selectionColor', TextType::class, [
                 'required' => false,
                 'label' => 'mapbender.3d.3dtiles.admin.selection_color',
                 'attr' => [
                     'data-variant' => ThreeDTilesVariant::LOD2->value,
+                    'class' => '-js-init-colorpicker',
                 ],
             ])
             ->add('pointSize', IntegerType::class, [
