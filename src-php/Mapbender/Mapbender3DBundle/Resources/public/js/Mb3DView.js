@@ -220,7 +220,6 @@
 
         _postLayertree() {
             const layertree = this._getLayertreePayload();
-            console.log(layertree);
             this._postToFrame(MESSAGE_TYPES.UPDATED_LAYERTREE, layertree);
         }
 
