@@ -85,6 +85,7 @@
             this.$panel.removeClass('-hidden');
             this.$toggle.addClass("hidden");
             this._addListeners();
+            this.mbMap.model.updateDisplayMode('3d');
 
             if (!this.frameLoaded) {
                 this.$frame.attr('src', this.options.iframeUrl);
@@ -94,17 +95,22 @@
             }
         }
 
+        _close() {
+            this.isActive = false;
+            this.$toggle.attr('aria-pressed', 'false').removeClass('is-active');
+            this.$panel.addClass('-hidden');
+            this.$toggle.removeClass('hidden');
+
+            this.mbMap.model.updateDisplayMode('ol');
+            this._removeListeners();
+        }
+
         deactivate() {
             if (!this.isActive) {
                 return;
             }
-            this.isActive = false;
-            this.$toggle.attr('aria-pressed', 'false').removeClass('is-active');
-            this.$panel.addClass('-hidden');
-            this.$toggle.removeClass("hidden");
-
-            this._removeListeners();
             this._request3dViewForCloseSync();
+            this._close();
         }
 
         _addListeners() {
@@ -182,10 +188,7 @@
                 window.clearTimeout(this.closeSyncTimer);
                 this.closeSyncTimer = null;
             }
-            this.isActive = false;
-            this.$toggle.attr('aria-pressed', 'false').removeClass('is-active');
-            this.$panel.addClass('-hidden');
-            this.$toggle.removeClass('hidden');
+            this._close();
         }
 
         _request3dViewForCloseSync() {

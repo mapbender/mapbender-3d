@@ -35,6 +35,11 @@ class ThreeDTilesSource extends Mapbender.Source {
     loadFeatureInfo(mapModel, x, y, options, elementId) {
         return [null, Promise.resolve([])];
     }
+
+    supportsMode(mode) {
+        return mode === '3d';
+    }
+
 }
 
 window.Mapbender = Mapbender || {};

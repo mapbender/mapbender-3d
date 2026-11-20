@@ -17,8 +17,7 @@ class ThreeDTilesSourceLayer extends Mapbender.SourceLayer {
     }
 
     supportsProjection(srsName) {
-        // Per Tile JSON spec, vector tiles are always in Web Mercator
-        return null;
+        return true;
     }
 
     getLegend(forPrint) {
