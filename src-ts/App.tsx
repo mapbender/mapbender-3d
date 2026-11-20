@@ -37,7 +37,6 @@ type UpdateLayertreePayload = {
     // for 3d tiles only
     variant?: "lod2" | "textured-mesh" | "pointcloud";
     url: string;
-    visible: boolean;
     opacity: number;
     // for 3d tiles variant lod2 only
     style?: {
