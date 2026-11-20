@@ -36,8 +36,6 @@ type UpdateLayertreePayload = {
     type: "3dtiles" | "wms" | "vector_tiles";
     // for 3d tiles only
     variant?: "lod2" | "textured-mesh" | "pointcloud";
-    // for wms only
-    layers?: string[];
     url: string;
     visible: boolean;
     opacity: number;

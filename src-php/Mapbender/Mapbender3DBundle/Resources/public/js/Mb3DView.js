@@ -228,10 +228,7 @@
             return Mapbender.Model.sourceTree.map((source) => {
                 if (!source.getSelected()) return null;
                 if (!source.supportsMode('3d')) return null;
-                const root = source.getRootLayer();
-               return {
-                   id: source.id,
-               }
+                return source.toJSON('3d');
             }).filter((source) => source !== null);
         }
 
