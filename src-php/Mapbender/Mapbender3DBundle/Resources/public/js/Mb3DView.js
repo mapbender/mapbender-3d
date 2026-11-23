@@ -155,6 +155,8 @@
                 return;
             }
 
+            console.log("MB Seite:", event.data);
+
             var data = event.data || {};
             if (data.channel !== CHANNEL || !data.type) {
                 return;
@@ -219,8 +221,8 @@
         }
 
         _postLayertree() {
-            const layertree = this._getLayertreePayload();
-            this._postToFrame(MESSAGE_TYPES.UPDATED_LAYERTREE, layertree);
+            const layertree = this._getLayertreePayload();        ;
+            this._postToFrame(MESSAGE_TYPES.UPDATE_LAYERTREE, layertree);
         }
 
         _getLayertreePayload() {
