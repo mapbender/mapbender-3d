@@ -21,7 +21,20 @@ const MESSAGE_TYPES = {
     VIEW_CHANGED: "viewChanged",
     UPDATE_LAYERTREE: "updateLayerTree",
     EXIT_3D: "exit3d",
+    UPDATE_FEATUREINFO_STATE: "updateFeatureInfoState",
+    FEATURE_INFO: "featureInfo",
 } as const;
+
+
+// interface FeatureInfos {
+//     source_id: string | number ;
+//     feature_info: Record<string, any>;
+// }
+
+// interface FeatureInfoPayload {
+//  click: [number, number];
+//  infos: FeatureInfos [] | null;
+// }
 
 type ViewPayload = {
     center: [number, number];
@@ -159,6 +172,12 @@ const App = () => {
             if (data.type === MESSAGE_TYPES.REQUEST_VIEW) {
                 postViewChanged();
             }
+
+            if (data.type === MESSAGE_TYPES.UPDATE_LAYERTREE) {
+                console.log(data.payload as UpdateLayertreePayload|undefined);
+            }
+
+            console.log(data.payload);
         };
 
         const onMoveEnd = () => postViewChanged();
