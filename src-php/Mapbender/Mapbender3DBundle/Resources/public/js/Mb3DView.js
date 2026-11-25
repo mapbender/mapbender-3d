@@ -126,6 +126,10 @@
                 this._postToFrame(MESSAGE_TYPES.UPDATE_FEATUREINFO_STATE, true);
             }
             $(document).on('mapbender.activate-feature-info', this.activateFeatureInfoProxy);
+            this.deActivateFeatureInfoProxy = (event, data) => {
+                this._postToFrame(MESSAGE_TYPES.UPDATE_FEATUREINFO_STATE, false);
+            }
+            $(document).on('mapbender.activate-feature-info', this.deActivateFeatureInfoProxy);
         }
 
         _removeListeners() {
@@ -137,6 +141,9 @@
             }
             if (this.activateFeatureInfoProxy) {
                 $(document).off('mapbender.activate-feature-info', this.activateFeatureInfoProxy);
+            }
+            if (this.deActivateFeatureInfoProxy) {
+                $(document).off('mapbender.deactivate-feature-info', this.deActivateFeatureInfoProxy);
             }
         }
 
