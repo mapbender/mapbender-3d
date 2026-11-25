@@ -9,6 +9,7 @@
         VIEW_CHANGED: 'viewChanged',
         EXIT_3D: "exit3d",
         UPDATE_LAYERTREE: "updateLayerTree",
+        ERROR: "error",
     };
 
     class Mb3DView extends MapbenderElement {
@@ -145,9 +146,6 @@
         }
 
         _handleFrameMessage(event) {
-            if (!this.frameLoaded) {
-                return;
-            }
             if (event.origin !== window.location.origin) {
                 return;
             }
@@ -155,10 +153,25 @@
                 return;
             }
 
-            console.log("MB Seite:", event.data);
-
             var data = event.data || {};
             if (data.channel !== CHANNEL || !data.type) {
+                return;
+            }
+
+            if (data.type === MESSAGE_TYPES.ERROR) {
+                const payload = data.payload;
+                if (!payload || typeof payload !== 'object' || Array.isArray(payload) ||
+                    typeof payload.message !== 'string' || !payload.message.trim() ||
+                    (payload.layerId !== undefined && typeof payload.layerId !== 'string') ||
+                    (payload.layerName !== undefined && typeof payload.layerName !== 'string')) {
+                    return;
+                }
+                const layer = payload.layerName || payload.layerId;
+                Mapbender.error(layer ? `3D (${layer}): ${payload.message}` : `3D: ${payload.message}`);
+                return;
+            }
+
+            if (!this.frameLoaded) {
                 return;
             }
 
