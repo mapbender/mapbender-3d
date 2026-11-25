@@ -9,6 +9,8 @@
         VIEW_CHANGED: 'viewChanged',
         EXIT_3D: "exit3d",
         UPDATE_LAYERTREE: "updateLayerTree",
+        UPDATE_FEATUREINFO_STATE: "updateFeatureInfoState",
+        FEATURE_INFO: "featureInfo",
     };
 
     class Mb3DView extends MapbenderElement {
@@ -119,6 +121,11 @@
 
             this.mapViewChangeProxy = this._handleMapViewChanged.bind(this);
             this.mbMap.element.on('mbmapviewchanged', this.mapViewChangeProxy);
+            this.activateFeatureInfoProxy = (event, data) => {
+                this.onFeatureInfoCallback = data.callback;
+                this._postToFrame(MESSAGE_TYPES.UPDATE_FEATUREINFO_STATE, true);
+            }
+            $(document).on('mapbender.activate-feature-info', this.activateFeatureInfoProxy);
         }
 
         _removeListeners() {
@@ -127,6 +134,9 @@
             }
             if (this.mapViewChangeProxy) {
                 this.mbMap.element.off('mbmapviewchanged', this.mapViewChangeProxy);
+            }
+            if (this.activateFeatureInfoProxy) {
+                $(document).off('mapbender.activate-feature-info', this.activateFeatureInfoProxy);
             }
         }
 
@@ -182,6 +192,25 @@
             if (data.type === MESSAGE_TYPES.READY && this.isActive) {
                 this._sendInitView();
             }
+            if (data.type === MESSAGE_TYPES.FEATURE_INFO && this.onFeatureInfoCallback) {
+                const payload = data.payload;
+                const coordsTransformed = Mapbender.mapEngine.transformCoordinate({
+                    x: payload.click[0],
+                    y: payload.click[1]
+                }, 'EPSG:4326', this.map.model.getCurrentProjectionCode());
+
+                onFeatureInfoCallback(coordsTransformed.x, coordsTransformed.y);
+
+                const info = payload.info;
+                for (const source of info) {
+                    const sourceId = source.layer_id;
+                    const properties = source.properties;
+                    console.log('Showing Feature Info for source:', sourceId, 'with properties:', properties);
+                    // TODO: finish the implementation to show feature info in the Mapbender application
+                    const sourceElement = Mapbender.Model.getSourceById(sourceId);
+                }
+            }
+
         }
 
         _closeFromIframeSwitch() {
