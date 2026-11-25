@@ -21,7 +21,7 @@ const deckColor = (color: RGBColor, alpha: number): Color => [
 export default function BuildingTilesLayer({ source, onStatus }: Props) {
 
   const [colorVersion, setColorVersion] = useState(0);
-  const [featureInfoActive, setFeatureInfoActive] = useState(true);
+  const [featureInfoActive, setFeatureInfoActive] = useState(false);
   const postMessage = usePostMessage();
   const selectedRef = useRef<string | null>(null);
   const [selectedProps, setSelectedProps] = useState<Record<
