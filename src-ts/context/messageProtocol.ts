@@ -9,6 +9,7 @@ export const MESSAGE_TYPES = {
   EXIT_3D: "exit3d",
   UPDATE_FEATUREINFO_STATE: "updateFeatureInfoState",
   FEATURE_INFO: "featureInfo",
+  ERROR: "error",
 } as const;
 
 export type ViewPayload = {
@@ -53,11 +54,18 @@ export interface FeatureInfoPayload{
     }
 }
 
+export type LayerErrorPayload = {
+  message: string;
+  layerId?: string;
+  layerName?: string;
+};
+
 export type OutboundPayloads = {
   [MESSAGE_TYPES.READY]: Record<string, never>;
   [MESSAGE_TYPES.VIEW_CHANGED]: ViewPayload;
   [MESSAGE_TYPES.EXIT_3D]: ViewPayload | null;
   [MESSAGE_TYPES.FEATURE_INFO]: FeatureInfoPayload;
+  [MESSAGE_TYPES.ERROR]: LayerErrorPayload;
 };
 
 export type InboundMessageType = keyof InboundPayloads;

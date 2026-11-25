@@ -17,6 +17,7 @@
     "@loaders.gl/tiles": "^4.5.4",
     "@mapcomponents/deck-gl": "^1.8.20",
     "@mapcomponents/react-maplibre": "^1.8.20",
+    "color-string": "^2.1.4",
     "deck.gl": "^9.4.1",
     "maplibre-gl": "^5.24.0",
     "react": "^19.3.1",
