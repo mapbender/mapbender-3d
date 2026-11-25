@@ -22,7 +22,7 @@ export type BuildingSource = BaseSource & {
   };
 };
 
-export type TexturedMeshSource = BaseSource & { type: "textured-mesh" };
+export type TexturedMeshSource = BaseSource & { type: "textured_mesh" };
 export type PointCloudSource = BaseSource & { type: "pointcloud"; pointSize: number };
 export type TilesSource = BuildingSource | TexturedMeshSource | PointCloudSource;
 export type LayersConfig = { layers: TilesSource[] };
@@ -81,7 +81,7 @@ export function parseLayersConfig(value: unknown): LayersConfig {
           throw new Error(`${source.name}: point size must be positive.`);
         }
         break;
-      case "textured-mesh":
+      case "textured_mesh":
         break;
       default:
         throw new Error(`${source.name}: unsupported layer type.`);

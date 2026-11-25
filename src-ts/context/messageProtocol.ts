@@ -22,7 +22,7 @@ export type MapbenderSourcePayload = {
   id: string | number;
   name: string;
   type: "3dtiles" | "wms" | "vector_tiles";
-  variant?: "lod2" | "textured-mesh" | "pointcloud";
+  variant?: "lod2" | "textured_mesh" | "pointcloud";
   url: string;
   opacity: number;
   style?: {

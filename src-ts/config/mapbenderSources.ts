@@ -64,8 +64,8 @@ export default function mapMapbenderSources(payload: unknown): unknown {
           selectionAlpha: selection.alpha,
         },
       });
-    } else if (candidate.variant === "textured-mesh") {
-      layers.push({ ...base, type: "textured-mesh" });
+    } else if (candidate.variant === "textured_mesh") {
+      layers.push({ ...base, type: "textured_mesh" });
     } else if (candidate.variant === "pointcloud") {
       layers.push({ ...base, type: "pointcloud", pointSize: candidate.pointSize });
     }
