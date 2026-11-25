@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { Enhanced3DTilePickingInfo } from "../lib/Tiles3DLayer2";
 import Ml3DTileLayer from "../lib/Ml3DTilesLayer";
 import type { Tile3D } from "@loaders.gl/tiles";
@@ -78,11 +78,6 @@ export default function BuildingTilesLayer({ source, onStatus }: Props) {
       setColorVersion((v) => v + 1);
     }
   }, [source.id, source.style.buildingIdProperty, featureInfoActive, postMessage]);
-
-
-  useEffect(() => {
-    console.log("featureInfoActive:" , featureInfoActive)
-  }, [featureInfoActive]);
   return (
     <>
       <Ml3DTileLayer

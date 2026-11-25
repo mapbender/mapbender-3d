@@ -2,8 +2,7 @@ import { useEffect } from "react";
 import { useMap } from "@mapcomponents/react-maplibre";
 import type { LayersConfig, TilesSource } from "../config/layers";
 import BuildingTilesLayer from "./ThreeDTilesLayer";
-import TexturedMeshTilesLayer from "./TexturedMeshTilesLayer";
-import PointCloudTilesLayer from "./PointCloudTilesLayer";
+import TilesetLayer from "./TilesetLayer";
 
 export type LayerStatus = { state: "loading" | "loaded" | "error"; message?: string };
 export type LayerStatusHandler = (source: TilesSource, state: LayerStatus["state"], message?: string) => void;
@@ -13,8 +12,8 @@ function ConfiguredLayer({ source, onStatus }: { source: TilesSource; onStatus: 
   useEffect(() => onStatus(source, "loading"), [source.id, source.type, source.url, onStatus]);
   switch (source.type) {
     case "LOD2": return <BuildingTilesLayer source={source} onStatus={onStatus} />;
-    case "textured_mesh": return <TexturedMeshTilesLayer source={source} onStatus={onStatus} />;
-    case "pointcloud": return <PointCloudTilesLayer source={source} onStatus={onStatus} />;
+    case "textured_mesh":
+    case "pointcloud": return <TilesetLayer source={source} onStatus={onStatus} />;
   }
 }
 

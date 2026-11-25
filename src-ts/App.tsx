@@ -1,5 +1,3 @@
-// App.tsx oder App.jsx
-import "./App.css";
 import { useCallback, useState } from "react";
 import {
     MapLibreMap,
@@ -53,15 +51,6 @@ const App = () => {
         setStatuses((previous) => previous[key]?.state === state && previous[key]?.message === message
             ? previous : { ...previous, [key]: { state, message } });
     }, []);
-
-    // useEffect(()=>{
-
-    //     if (!mapHook.map){
-    //         return
-    //     }
-    //     mapHook.map.getLayer("building-3d")?.setLayoutProperty("visibility", "none")
-
-    // }, [mapHook.map])
 
     return (
         <>

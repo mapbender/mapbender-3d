@@ -27,7 +27,7 @@ export type PointCloudSource = BaseSource & { type: "pointcloud"; pointSize: num
 export type TilesSource = BuildingSource | TexturedMeshSource | PointCloudSource;
 export type LayersConfig = { layers: TilesSource[] };
 
-function isRecord(value: unknown): value is Record<string, unknown> {
+export function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 

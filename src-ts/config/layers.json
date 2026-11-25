@@ -27,7 +27,7 @@
       "id": "pointcloud",
       "name": "Point Cloud",
       "type": "pointcloud",
-      "url": "http://localhost:5173/pointclouds/tileset.json",
+      "url": "http://localhost:5173/testPointcloud/tileset.json",
       "visible": false,
       "opacity": 1,
       "pointSize": 2
