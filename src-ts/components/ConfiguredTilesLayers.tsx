@@ -13,7 +13,7 @@ function ConfiguredLayer({ source, onStatus }: { source: TilesSource; onStatus: 
   useEffect(() => onStatus(source, "loading"), [source.id, source.type, source.url, onStatus]);
   switch (source.type) {
     case "LOD2": return <BuildingTilesLayer source={source} onStatus={onStatus} />;
-    case "textured-mesh": return <TexturedMeshTilesLayer source={source} onStatus={onStatus} />;
+    case "textured_mesh": return <TexturedMeshTilesLayer source={source} onStatus={onStatus} />;
     case "pointcloud": return <PointCloudTilesLayer source={source} onStatus={onStatus} />;
   }
 }
