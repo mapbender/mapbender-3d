@@ -3,3 +3,4 @@
 node_modules
 /public/pointclouds
 /src-php/Mapbender/Mapbender3DBundle/Resources/public/iframe/pointclouds
+/src-php/Mapbender/Mapbender3DBundle/Resources/public/iframe/
