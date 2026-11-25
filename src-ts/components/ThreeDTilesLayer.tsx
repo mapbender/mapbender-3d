@@ -7,10 +7,17 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import Paper from "@mui/material/Paper";
-import type { BuildingSource } from "../config/layers";
+import type { BuildingSource, RGBColor } from "../config/layers";
 import type { LayerStatusHandler } from "./ConfiguredTilesLayers";
 
 type Props = { source: BuildingSource; onStatus: LayerStatusHandler };
+
+const deckColor = (color: RGBColor, alpha: number): Color => [
+  color[0],
+  color[1],
+  color[2],
+  Math.round(alpha * 255),
+];
 
 export default function BuildingTilesLayer({ source, onStatus }: Props) {
 
@@ -28,12 +35,12 @@ export default function BuildingTilesLayer({ source, onStatus }: Props) {
       const surface = String(props?.[source.style.surfaceProperty] ?? "").toLowerCase();
 
       if (selectedRef.current && String(gmlId) === selectedRef.current) {
-        return source.style.selectionColor;
+        return deckColor(source.style.selectionColor, source.style.selectionAlpha);
       }
       if (surface === "roof") {
-        return source.style.roofColor;
+        return deckColor(source.style.roofColor, source.style.roofAlpha);
       }
-      return source.style.wallColor;
+      return deckColor(source.style.wallColor, source.style.wallAlpha);
     },
     [source.style],
   );

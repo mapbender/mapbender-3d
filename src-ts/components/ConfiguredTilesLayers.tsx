@@ -22,7 +22,7 @@ export default function ConfiguredTilesLayers({ config, onStatus }: {
   config: LayersConfig;
   onStatus: LayerStatusHandler;
 }) {
-  const { map } = useMap({ mapId: "bonn-map" });
+  const { map } = useMap({ mapId: "3d-map"});
   const hasBuildings = config.layers.some((source) => source.visible && source.url && source.type !== "pointcloud");
 
   useEffect(() => {

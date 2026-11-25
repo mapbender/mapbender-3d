@@ -1,6 +1,6 @@
 // App.tsx oder App.jsx
 import "./App.css";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import {
     MapLibreMap,
     MlNavigationTools,
@@ -12,69 +12,8 @@ import type { LayerStatus, LayerStatusHandler } from "./components/ConfiguredTil
 import LayerTree from "./components/LayerTree";
 import useLayersConfig from "./config/useLayersConfig";
 import Light from "./Light";
-
-const MESSAGE_CHANNEL = "mb-3dview";
-const MESSAGE_TYPES = {
-    INIT_VIEW: "initView",
-    REQUEST_VIEW: "requestView",
-    READY: "ready",
-    VIEW_CHANGED: "viewChanged",
-    UPDATE_LAYERTREE: "updateLayerTree",
-    EXIT_3D: "exit3d",
-    UPDATE_FEATUREINFO_STATE: "updateFeatureInfoState",
-    FEATURE_INFO: "featureInfo",
-} as const;
-
-
-// interface FeatureInfos {
-//     source_id: string | number ;
-//     feature_info: Record<string, any>;
-// }
-
-// interface FeatureInfoPayload {
-//  click: [number, number];
-//  infos: FeatureInfos [] | null;
-// }
-
-type ViewPayload = {
-    center: [number, number];
-    zoom?: number;
-    bearing?: number;
-    pitch?: number;
-};
-
-type UpdateLayertreePayload = {
-    id: string | number;
-    name: string;
-    type: "3dtiles" | "wms" | "vector_tiles";
-    // for 3d tiles only
-    variant?: "lod2" | "textured-mesh" | "pointcloud";
-    url: string;
-    opacity: number;
-    // for 3d tiles variant lod2 only
-    style?: {
-        surfaceProperty: string;
-        buildingIdProperty: string;
-        roofColor: string;
-        wallColor: string;
-        selectionColor: string;
-    };
-    // for 3d tiles variant pointcloud only
-    pointSize?: number;
-}[];
-
-type BridgeMessage = {
-    channel?: string;
-    type?: string;
-    payload?: ViewPayload;
-};
-
-type Position = {
-    center: number[];
-    zoom: number;
-    bearing: number;
-    pitch: number;
-};
+import useMapViewBridge from "./context/useMapViewBridge";
+import useLayerTreeBridge from "./context/useLayerTreeBridge";
 
 const primaryButtonStyle = {
     minWidth: "48px",
@@ -104,101 +43,16 @@ const primaryButtonStyle = {
 };
 
 const App = () => {
-    const mapHook = useMap({ mapId: "bonn-map" });
-    const [lastPosition, setLastPosition] = useState<Position | null>(null);
+    const mapHook = useMap({ mapId: "3d-map"});
     const { config, replaceConfig, error } = useLayersConfig();
+    const exit3d = useMapViewBridge(mapHook.map);
+    useLayerTreeBridge(replaceConfig);
     const [statuses, setStatuses] = useState<Record<string, LayerStatus>>({});
     const onStatus: LayerStatusHandler = useCallback((source, state, message) => {
         const key = sourceKey(source);
         setStatuses((previous) => previous[key]?.state === state && previous[key]?.message === message
             ? previous : { ...previous, [key]: { state, message } });
     }, []);
-
-    const postViewChanged = useCallback(() => {
-        if (!mapHook.map) return;
-        const center = mapHook.map.getCenter();
-        if (!center) return;
-        const _lastPosition = {
-            center: [center.lng, center.lat],
-            zoom: mapHook.map.getZoom(),
-            bearing: mapHook.map.getBearing(),
-            pitch: mapHook.map.getPitch(),
-        };
-        window.parent.postMessage(
-            {
-                channel: MESSAGE_CHANNEL,
-                type: MESSAGE_TYPES.VIEW_CHANGED,
-                payload: _lastPosition,
-            },
-            window.location.origin,
-        );
-        setLastPosition(_lastPosition);
-    }, [mapHook.map]);
-
-    useEffect(() => {
-        if (!mapHook.map) return;
-
-        const applyView = (payload: ViewPayload | undefined) => {
-            if (!payload || !Array.isArray(payload.center)) return;
-            mapHook.map!.jumpTo({
-                center: payload.center,
-                zoom:
-                    typeof payload.zoom === "number"
-                        ? payload.zoom
-                        : mapHook.map!.getZoom(),
-                bearing:
-                    typeof payload.bearing === "number"
-                        ? payload.bearing
-                        : mapHook.map!.getBearing(),
-                pitch:
-                    typeof payload.pitch === "number"
-                        ? payload.pitch
-                        : mapHook.map!.getPitch(),
-            });
-        };
-
-        const handleMessage = (event: Event) => {
-            const messageEvent = event as MessageEvent<unknown>;
-            if (messageEvent.origin !== window.location.origin) return;
-            if (messageEvent.source !== window.parent) return;
-            const rawData = messageEvent.data;
-            if (!rawData || typeof rawData !== "object") return;
-            const data = rawData as BridgeMessage;
-            if (data.channel !== MESSAGE_CHANNEL || !data.type) return;
-
-            if (data.type === MESSAGE_TYPES.INIT_VIEW) {
-                applyView(data.payload);
-            }
-            if (data.type === MESSAGE_TYPES.REQUEST_VIEW) {
-                postViewChanged();
-            }
-
-            if (data.type === MESSAGE_TYPES.UPDATE_LAYERTREE) {
-                console.log(data.payload as UpdateLayertreePayload|undefined);
-            }
-
-            console.log(data.payload);
-        };
-
-        const onMoveEnd = () => postViewChanged();
-
-        window.addEventListener("message", handleMessage);
-        mapHook.map.on("moveend", onMoveEnd);
-
-        window.parent.postMessage(
-            {
-                channel: MESSAGE_CHANNEL,
-                type: MESSAGE_TYPES.READY,
-                payload: {},
-            },
-            window.location.origin,
-        );
-
-        return () => {
-            window.removeEventListener("message", handleMessage);
-            mapHook.map?.off("moveend", onMoveEnd);
-        };
-    }, [mapHook.map, postViewChanged]);
 
     // useEffect(()=>{
 
@@ -213,7 +67,7 @@ const App = () => {
         <>
             <div>
                 <MapLibreMap
-                    mapId="bonn-map"
+                    mapId="3d-map"
                     options={{
                         style: "https://wms.wheregroup.com/tileserver/style/osm-liberty.json",
                         center: [9.9843, 53.543328],
@@ -251,17 +105,7 @@ const App = () => {
                         position: "absolute",
                         right: "40px",
                     }}
-                    onClick={() => {
-                        window.parent.postMessage(
-                            {
-                                channel: MESSAGE_CHANNEL,
-                                type: MESSAGE_TYPES.EXIT_3D,
-
-                                payload: lastPosition,
-                            },
-                            window.location.origin,
-                        );
-                    }}
+                    onClick={exit3d}
                 >
                    <Typography variant="body2"> 2D</Typography>
                 </Button>
