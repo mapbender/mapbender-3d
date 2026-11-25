@@ -1,5 +1,3 @@
-import defaults from "./layers.json";
-
 export type RGBColor = [number, number, number];
 
 type BaseSource = {
@@ -16,23 +14,30 @@ export type BuildingSource = BaseSource & {
     surfaceProperty: string;
     buildingIdProperty: string;
     roofColor: RGBColor;
+    roofAlpha: number;
     wallColor: RGBColor;
+    wallAlpha: number;
     selectionColor: RGBColor;
+    selectionAlpha: number;
   };
 };
 
-export type TexturedMeshSource = BaseSource & { type: "textured-mesh" };
+export type TexturedMeshSource = BaseSource & { type: "textured_mesh" };
 export type PointCloudSource = BaseSource & { type: "pointcloud"; pointSize: number };
 export type TilesSource = BuildingSource | TexturedMeshSource | PointCloudSource;
 export type LayersConfig = { layers: TilesSource[] };
 
-function isRecord(value: unknown): value is Record<string, unknown> {
+export function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 function isColor(value: unknown): value is RGBColor {
   return Array.isArray(value) && value.length === 3 &&
     value.every((channel) => Number.isInteger(channel) && channel >= 0 && channel <= 255);
+}
+
+function isAlpha(value: unknown): value is number {
+  return typeof value === "number" && Number.isFinite(value) && value >= 0 && value <= 1;
 }
 
 export function parseLayersConfig(value: unknown): LayersConfig {
@@ -64,7 +69,9 @@ export function parseLayersConfig(value: unknown): LayersConfig {
         const style = source.style;
         if (!isRecord(style) || typeof style.surfaceProperty !== "string" || !style.surfaceProperty.trim() ||
           typeof style.buildingIdProperty !== "string" || !style.buildingIdProperty.trim() ||
-          !isColor(style.roofColor) || !isColor(style.wallColor) || !isColor(style.selectionColor)) {
+          !isColor(style.roofColor) || !isAlpha(style.roofAlpha) ||
+          !isColor(style.wallColor) || !isAlpha(style.wallAlpha) ||
+          !isColor(style.selectionColor) || !isAlpha(style.selectionAlpha)) {
           throw new Error(`${source.name}: invalid building style.`);
         }
         break;
@@ -74,7 +81,7 @@ export function parseLayersConfig(value: unknown): LayersConfig {
           throw new Error(`${source.name}: point size must be positive.`);
         }
         break;
-      case "textured-mesh":
+      case "textured_mesh":
         break;
       default:
         throw new Error(`${source.name}: unsupported layer type.`);
@@ -83,4 +90,4 @@ export function parseLayersConfig(value: unknown): LayersConfig {
   return structuredClone(value) as LayersConfig;
 }
 
-export const initialLayersConfig = parseLayersConfig(defaults);
+export const initialLayersConfig = parseLayersConfig({ layers: [] });

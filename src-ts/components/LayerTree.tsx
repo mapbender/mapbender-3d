@@ -38,7 +38,7 @@ function LayerSettings({ source, onChange }: { source: TilesSource; onChange: (s
       onChange({ ...template, id: source.id, name: source.name, url: source.url, visible: source.visible, opacity: source.opacity });
     }}>
       <MenuItem value="LOD2">LOD2 Buildings</MenuItem>
-      <MenuItem value="textured-mesh">Textured Mesh</MenuItem>
+      <MenuItem value="textured_mesh">Textured Mesh</MenuItem>
       <MenuItem value="pointcloud">Point Cloud</MenuItem>
     </TextField>
     <UrlField url={source.url} onChange={(url) => onChange({ ...source, url })} />
