@@ -12,7 +12,7 @@ export default function PointCloudTilesLayer({ source, onStatus }: {
   const loadOptions = useTilesetRoot(source, onStatus);
   if (!loadOptions) return null;
   return <Ml3DTileLayer
-    mapId="bonn-map"
+    mapId="3d-map"
     id={source.id}
     data={source.url}
     opacity={source.opacity}

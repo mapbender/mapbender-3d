@@ -15,7 +15,7 @@ import {
   MESSAGE_TYPES,
   OutboundMessageType,
   OutboundPayloads,
-  STICKY_TYPES,
+  REPLAYABLE_MESSAGE_TYPES,
   isBridgeMessage,
 } from "./messageProtocol";
 
@@ -49,7 +49,7 @@ export function MessageProvider({ children }: { children: ReactNode }) {
     listeners.add(listener);
     subscribers.current.set(type, listeners);
 
-    if (STICKY_TYPES.includes(type) && latestMessages.current.has(type)) {
+    if (REPLAYABLE_MESSAGE_TYPES.includes(type) && latestMessages.current.has(type)) {
       listener(latestMessages.current.get(type));
     }
 
@@ -65,7 +65,7 @@ export function MessageProvider({ children }: { children: ReactNode }) {
       if (!isBridgeMessage(event.data)) return;
       const message = event.data;
 
-      if (STICKY_TYPES.includes(message.type)) {
+      if (REPLAYABLE_MESSAGE_TYPES.includes(message.type)) {
         latestMessages.current.set(message.type, message.payload);
       }
 

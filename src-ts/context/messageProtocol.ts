@@ -35,18 +35,29 @@ export type MapbenderSourcePayload = {
   pointSize?: number;
 };
 
+export type FeatureInfoStatePayload = boolean;
+export type Wgs84Coordinate = [longitude: number, latitude: number];
+
 export type InboundPayloads = {
   [MESSAGE_TYPES.INIT_VIEW]: ViewPayload;
   [MESSAGE_TYPES.REQUEST_VIEW]: Record<string, never>;
   [MESSAGE_TYPES.UPDATE_LAYERTREE]: MapbenderSourcePayload[];
-  [MESSAGE_TYPES.UPDATE_FEATUREINFO_STATE]: unknown;
+  [MESSAGE_TYPES.UPDATE_FEATUREINFO_STATE]: FeatureInfoStatePayload;
 };
+
+export interface FeatureInfoPayload{
+  click: Wgs84Coordinate
+    info: {
+        layer_id: string | number;
+        properties: Record<string, any>;
+    }
+}
 
 export type OutboundPayloads = {
   [MESSAGE_TYPES.READY]: Record<string, never>;
   [MESSAGE_TYPES.VIEW_CHANGED]: ViewPayload;
   [MESSAGE_TYPES.EXIT_3D]: ViewPayload | null;
-  [MESSAGE_TYPES.FEATURE_INFO]: unknown;
+  [MESSAGE_TYPES.FEATURE_INFO]: FeatureInfoPayload;
 };
 
 export type InboundMessageType = keyof InboundPayloads;
@@ -59,7 +70,7 @@ export type BridgeMessage = {
   payload?: unknown;
 };
 
-export const STICKY_TYPES: readonly MessageType[] = [
+export const REPLAYABLE_MESSAGE_TYPES: readonly MessageType[] = [
   MESSAGE_TYPES.INIT_VIEW,
   MESSAGE_TYPES.UPDATE_LAYERTREE,
 ];

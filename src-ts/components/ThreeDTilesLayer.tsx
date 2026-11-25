@@ -1,12 +1,11 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Enhanced3DTilePickingInfo } from "../lib/Tiles3DLayer2";
 import Ml3DTileLayer from "../lib/Ml3DTilesLayer";
 import type { Tile3D } from "@loaders.gl/tiles";
 import type { Color } from "@deck.gl/core";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Divider from "@mui/material/Divider";
-import Paper from "@mui/material/Paper";
+import { Box, Typography, Divider, Paper } from "@mui/material";
+import { useMessage, usePostMessage } from "../context/MessageContext";
+import { MESSAGE_TYPES } from "../context/messageProtocol";
 import type { BuildingSource, RGBColor } from "../config/layers";
 import type { LayerStatusHandler } from "./ConfiguredTilesLayers";
 
@@ -22,11 +21,15 @@ const deckColor = (color: RGBColor, alpha: number): Color => [
 export default function BuildingTilesLayer({ source, onStatus }: Props) {
 
   const [colorVersion, setColorVersion] = useState(0);
+  const [featureInfoActive, setFeatureInfoActive] = useState(true);
+  const postMessage = usePostMessage();
   const selectedRef = useRef<string | null>(null);
   const [selectedProps, setSelectedProps] = useState<Record<
     string,
     unknown
   > | null>(null);
+
+  useMessage(MESSAGE_TYPES.UPDATE_FEATUREINFO_STATE, setFeatureInfoActive);
 
   const getFeatureColor = useCallback(
     (featureId: number, tile: Tile3D): Color => {
@@ -46,8 +49,23 @@ export default function BuildingTilesLayer({ source, onStatus }: Props) {
   );
 
   const onClick = useCallback((info: unknown) => {
+
+    if (!featureInfoActive) return;
+
+
     const pickInfo = info as Enhanced3DTilePickingInfo;
     if (!pickInfo.picked) return;
+
+    const coordinate = pickInfo.coordinate;
+    if (coordinate && Number.isFinite(coordinate[0]) && Number.isFinite(coordinate[1])) {
+      postMessage(MESSAGE_TYPES.FEATURE_INFO, {
+        click: [coordinate[0], coordinate[1]],
+        info: {
+          layer_id: source.id,
+          properties: pickInfo.featureProperties ?? {},
+        },
+      });
+    }
 
     const rawId = pickInfo.featureProperties?.[source.style.buildingIdProperty];
     if (rawId !== undefined && rawId !== null) {
@@ -59,19 +77,23 @@ export default function BuildingTilesLayer({ source, onStatus }: Props) {
       );
       setColorVersion((v) => v + 1);
     }
-  }, [source.style.buildingIdProperty]);
+  }, [source.id, source.style.buildingIdProperty, featureInfoActive, postMessage]);
 
+
+  useEffect(() => {
+    console.log("featureInfoActive:" , featureInfoActive)
+  }, [featureInfoActive]);
   return (
     <>
       <Ml3DTileLayer
         id={source.id}
-        mapId="bonn-map"
+        mapId="3d-map"
         data={source.url}
         opacity={source.opacity}
         onError={(error) => { onStatus(source, "error", error.message); return true; }}
-        pickable={true}
+        pickable={featureInfoActive}
         getFeatureColor={getFeatureColor}
-        onClick={onClick}
+        onClick={ onClick }
         updateTrigger={colorVersion}
         onTilesetLoad={() => onStatus(source, "loading")}
         onTileLoad={() => onStatus(source, "loaded")}
