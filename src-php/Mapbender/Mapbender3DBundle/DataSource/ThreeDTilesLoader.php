@@ -10,9 +10,10 @@ use Mapbender\CoreBundle\Entity\Source;
 use Mapbender\Exception\Loader\ServerResponseErrorException;
 use Mapbender\Mapbender3DBundle\DataSource\Type\ThreeDTilesSourceType;
 use Mapbender\Mapbender3DBundle\Entity\ThreeDTilesSource;
+use Mapbender\Mapbender3DBundle\Entity\ThreeDTilesVariant;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class ThreeDTilesLoader extends SourceLoader implements StyleableSourceLoaderInterface
+class ThreeDTilesLoader extends SourceLoader
 {
     public function __construct(
         protected HttpTransportInterface $httpTransport,
@@ -66,21 +67,19 @@ class ThreeDTilesLoader extends SourceLoader implements StyleableSourceLoaderInt
         $source->setJsonUrl($url);
         $source->setTitle($json['title'] ?? basename($url, '.json'));
         $source->setDescription($json['description'] ?? '');
-        $source->setSurfaceProperty(is_array($formData)
-            ? $formData['surfaceProperty'] ?? $source->getSurfaceProperty()
-            : $formData->getSurfaceProperty());
+        $variant = is_array($formData)
+            ? $formData['variant'] ?? $source->getVariant()
+            : $formData->getVariant();
+        $source->setVariant(is_string($variant) ? ThreeDTilesVariant::from($variant) : $variant);
+        $source->setMappings(is_array($formData)
+            ? $formData['mappings'] ?? $source->getMappings()
+            : $formData->getMappings());
+        $source->setMappingProperty(is_array($formData)
+            ? $formData['mappingProperty'] ?? $source->getMappingProperty()
+            : $formData->getMappingProperty());
         $source->setBuildingIdProperty(is_array($formData)
             ? $formData['buildingIdProperty'] ?? $source->getBuildingIdProperty()
             : $formData->getBuildingIdProperty());
-        $source->setRoofColor(is_array($formData)
-            ? $formData['roofColor'] ?? $source->getRoofColor()
-            : $formData->getRoofColor());
-        $source->setWallColor(is_array($formData)
-            ? $formData['wallColor'] ?? $source->getWallColor()
-            : $formData->getWallColor());
-        $source->setSelectionColor(is_array($formData)
-            ? $formData['selectionColor'] ?? $source->getSelectionColor()
-            : $formData->getSelectionColor());
         $source->setPointSize(is_array($formData)
             ? $formData['pointSize'] ?? $source->getPointSize()
             : $formData->getPointSize());
@@ -91,8 +90,4 @@ class ThreeDTilesLoader extends SourceLoader implements StyleableSourceLoaderInt
         return ThreeDTilesSourceType::class;
     }
 
-    public function loadStylesForSource(Source $source): void
-    {
-
-    }
 }

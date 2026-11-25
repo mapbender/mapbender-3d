@@ -23,14 +23,14 @@ class ThreeDTilesInstance extends SourceInstance
     #[ORM\Column(type: 'boolean', nullable: true)]
     protected ?bool $selected = true;
 
-    #[ORM\Column(name: 'roof_color', type: 'string', nullable: true)]
-    protected ?string $roofColor = null;
+    #[ORM\Column(name: 'mapping_property', type: 'string', nullable: true)]
+    protected ?string $mappingProperty = null;
 
-    #[ORM\Column(name: 'wall_color', type: 'string', nullable: true)]
-    protected ?string $wallColor = null;
+    #[ORM\Column(name: 'default_color', type: 'string', nullable: true)]
+    protected ?string $defaultColor = null;
 
-    #[ORM\Column(name: 'selection_color', type: 'string', nullable: true)]
-    protected ?string $selectionColor = null;
+    #[ORM\Column(name: 'mapping_colors', type: 'json', nullable: true)]
+    protected ?array $mappingColors = null;
 
     #[ORM\Column(name: 'point_size', type: 'integer', nullable: true)]
     protected ?int $pointSize = null;
@@ -80,34 +80,34 @@ class ThreeDTilesInstance extends SourceInstance
         $this->selected = $selected;
     }
 
-    public function getRoofColor(): ?string
+    public function getMappingProperty(): ?string
     {
-        return $this->roofColor;
+        return $this->mappingProperty;
     }
 
-    public function setRoofColor(?string $roofColor): void
+    public function setMappingProperty(?string $mappingProperty): void
     {
-        $this->roofColor = $roofColor;
+        $this->mappingProperty = $mappingProperty;
     }
 
-    public function getWallColor(): ?string
+    public function getDefaultColor(): ?string
     {
-        return $this->wallColor;
+        return $this->defaultColor;
     }
 
-    public function setWallColor(?string $wallColor): void
+    public function setDefaultColor(?string $defaultColor): void
     {
-        $this->wallColor = $wallColor;
+        $this->defaultColor = $defaultColor;
     }
 
-    public function getSelectionColor(): ?string
+    public function getMappingColors(): array
     {
-        return $this->selectionColor;
+        return $this->mappingColors ?? [];
     }
 
-    public function setSelectionColor(?string $selectionColor): void
+    public function setMappingColors(?array $mappingColors): void
     {
-        $this->selectionColor = $selectionColor;
+        $this->mappingColors = $mappingColors;
     }
 
     public function getPointSize(): ?int

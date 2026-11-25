@@ -1,6 +1,6 @@
 {% extends "@MapbenderManager/Repository/instance.html.twig" %}
 
-{% block form_main2 %}
+{% block form_main1 %}
     {{ parent() }}
     <div class="row g-3 mb-3">
         <div class="col">
@@ -10,18 +10,17 @@
             {{ form_widget(form.allowSelected) }}
         </div>
     </div>
-    {% if form.roofColor is defined %}
-        {{ form_row(form.roofColor) }}
+
+    {{ form_row(form.basesource) }}
+    {% if form.proxy is defined %}
+        {{ form_row(form.proxy) }}
     {% endif %}
-    {% if form.wallColor is defined %}
-        {{ form_row(form.wallColor) }}
+{% endblock %}
+{% block form_main2 %}
+    {% if form.defaultColor is defined %}
+        {{ form_row(form.defaultColor) }}
     {% endif %}
-    {% if form.selectionColor is defined %}
-        {{ form_row(form.selectionColor) }}
-    {% endif %}
-    {% if form.pointSize is defined %}
-        {{ form_row(form.pointSize) }}
-    {% endif %}
+    {{ form_rest(form) }}
 {% endblock %}
 
 {% block js %}

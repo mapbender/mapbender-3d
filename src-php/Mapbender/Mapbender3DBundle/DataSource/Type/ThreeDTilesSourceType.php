@@ -2,10 +2,10 @@
 
 namespace Mapbender\Mapbender3DBundle\DataSource\Type;
 
-use Mapbender\CoreBundle\Element\Type\PaintType;
+use Mapbender\CoreBundle\Element\Type\CollapsibleCollectionType;
 use Mapbender\ManagerBundle\Form\Type\SourceType;
+use Mapbender\Mapbender3DBundle\Entity\ThreeDTilesSource;
 use Mapbender\Mapbender3DBundle\Entity\ThreeDTilesVariant;
-use Symfony\Component\Form\Extension\Core\Type\ColorType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -24,13 +24,6 @@ class ThreeDTilesSourceType extends SourceType
                 'class' => ThreeDTilesVariant::class,
                 'label' => 'mapbender.3d.3dtiles.admin.variant',
             ])
-            ->add('surfaceProperty', TextType::class, [
-                'required' => false,
-                'label' => 'mapbender.3d.3dtiles.admin.surface_property',
-                'attr' => [
-                    'data-variant' => ThreeDTilesVariant::LOD2->value,
-                ],
-            ])
             ->add('buildingIdProperty', TextType::class, [
                 'required' => false,
                 'label' => 'mapbender.3d.3dtiles.admin.building_id_property',
@@ -38,29 +31,33 @@ class ThreeDTilesSourceType extends SourceType
                     'data-variant' => ThreeDTilesVariant::LOD2->value,
                 ],
             ])
-            ->add('roofColor', TextType::class, [
+            ->add('mappingProperty', TextType::class, [
                 'required' => false,
-                'label' => 'mapbender.3d.3dtiles.admin.roof_color',
+                'label' => 'mapbender.3d.3dtiles.admin.mapping_property',
+                'attr' => [
+                    'data-variant' => ThreeDTilesVariant::LOD2->value,
+                ],
+            ])
+            ->add('defaultColor', TextType::class, [
+                'required' => false,
+                'label' => 'mapbender.3d.3dtiles.admin.default_color',
                 'attr' => [
                     'data-variant' => ThreeDTilesVariant::LOD2->value,
                     'class' => '-js-init-colorpicker',
                 ],
             ])
-            ->add('wallColor', TextType::class, [
-                'required' => false,
-                'label' => 'mapbender.3d.3dtiles.admin.wall_color',
+            ->add('mappings', CollapsibleCollectionType::class, [
+                'label' => 'mapbender.3d.3dtiles.admin.mappings',
+                'allow_add' => true,
                 'attr' => [
+                    'data-defaults' => json_encode(ThreeDTilesSource::defaultMappings()),
                     'data-variant' => ThreeDTilesVariant::LOD2->value,
-                    'class' => '-js-init-colorpicker',
                 ],
-            ])
-            ->add('selectionColor', TextType::class, [
+                'allow_delete' => true,
+                'initial_collapse_state' => CollapsibleCollectionType::INITIAL_STATE_ALL_OPENED,
+                'entry_type' => ThreeDTilesSourceMappingType::class,
+                'error_bubbling' => false,
                 'required' => false,
-                'label' => 'mapbender.3d.3dtiles.admin.selection_color',
-                'attr' => [
-                    'data-variant' => ThreeDTilesVariant::LOD2->value,
-                    'class' => '-js-init-colorpicker',
-                ],
             ])
             ->add('pointSize', IntegerType::class, [
                 'required' => false,

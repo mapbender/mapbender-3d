@@ -56,11 +56,21 @@ class ThreeDTilesConfigGenerator extends SourceInstanceConfigGenerator
         ];
 
         if ($source->getVariant() === ThreeDTilesVariant::LOD2) {
-            $config['options']['surfaceProperty'] = $source->getSurfaceProperty();
+            $config['options']['mappingProperty'] = $sourceInstance->getMappingProperty() ?? $source->getMappingProperty();
             $config['options']['buildingIdProperty'] = $source->getBuildingIdProperty();
-            $config['options']['roofColor'] = $sourceInstance->getRoofColor() ?? $source->getRoofColor();
-            $config['options']['wallColor'] = $sourceInstance->getWallColor() ?? $source->getWallColor();
-            $config['options']['selectionColor'] = $sourceInstance->getSelectionColor() ?? $source->getSelectionColor();
+
+            $mappingColors = [];
+            $instanceMappingColors = $sourceInstance->getMappingColors() ?? [];
+            foreach ($source->getMappings() as $mapping) {
+                $property = $mapping['property'];
+                $color = $instanceMappingColors[$property] ?? $mapping['value'];
+                $mappingColors[$property] = $color;
+            }
+
+            $config['options']['style'] = [
+                'defaultColor' => $sourceInstance->getDefaultColor() ?? $source->getDefaultColor(),
+                'mappingColors' => $mappingColors,
+            ];
         }
 
         if ($source->getVariant() === ThreeDTilesVariant::POINT_CLOUD) {

@@ -60,11 +60,8 @@ class ThreeDTilesSource extends Mapbender.Source {
 
         if (json.variant === 'lod2') {
             json.style = {
-                surfaceProperty: this.options.surfaceProperty,
+                mappingProperty: this.options.mappingProperty,
                 buildingIdProperty: this.options.buildingIdProperty,
-                roofColor: this.options.roofColor,
-                wallColor: this.options.wallColor,
-                selectionColor: this.options.selectionColor,
             }
         }
 

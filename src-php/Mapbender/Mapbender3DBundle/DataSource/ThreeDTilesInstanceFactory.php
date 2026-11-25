@@ -46,9 +46,7 @@ class ThreeDTilesInstanceFactory extends SourceInstanceFactory
         $instance->setAllowSelected($data['allowSelected'] ?? true);
         $instance->setSelected($data['selected'] ?? true);
         $instance->setBasesource($data['basesource'] ?? $data['isBaseSource'] ?? false);
-        $instance->setRoofColor($data['roofColor'] ?? null);
-        $instance->setWallColor($data['wallColor'] ?? null);
-        $instance->setSelectionColor($data['selectionColor'] ?? null);
+        $instance->setMappingProperty($data['mappingProperty'] ?? null);
         $instance->setPointSize($data['pointSize'] ?? null);
 
         return $instance;
@@ -62,7 +60,7 @@ class ThreeDTilesInstanceFactory extends SourceInstanceFactory
         $source->setDescription($data['description'] ?? null);
         $source->setId($id);
         $source->setVariant(ThreeDTilesVariant::from($data['variant']));
-        if (isset($data['surfaceProperty'])) $source->setSurfaceProperty($data['surfaceProperty']);
+        if (isset($data['mappingProperty'])) $source->setMappingProperty($data['mappingProperty']);
         if (isset($data['buildingIdProperty'])) $source->setBuildingIdProperty($data['buildingIdProperty']);
         return $source;
     }

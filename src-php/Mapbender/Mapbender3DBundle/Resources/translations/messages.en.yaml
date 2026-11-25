@@ -9,11 +9,12 @@ mapbender.3d:
         admin:
           json_url: URL to 3D-Tiles-JSON
           variant: Variant
-          surface_property: Surface Property
+          mapping_property: Mapping Property
+          mappings: Mappings
+          mappings_property: Property Name
+          mappings_value: Property Value
+          default_color: Standardfarbe
           building_id_property: Building Id Property
-          roof_color: Roof Color
-          wall_color: Wall Color
-          selection_color: Selection Color
           point_size: Point Size
         variant:
             lod2: LOD2

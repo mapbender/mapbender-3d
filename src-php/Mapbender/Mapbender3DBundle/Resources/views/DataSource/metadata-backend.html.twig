@@ -18,25 +18,26 @@
         </tr>
         {% if source.variant == lod2Variant %}
             <tr>
-                <th>{{ 'mapbender.3d.3dtiles.admin.surface_property' | trans }}:</th>
-                <td>{{ source.surfaceProperty }}</td>
+                <th>{{ 'mapbender.3d.3dtiles.admin.mapping_property' | trans }}:</th>
+                <td>{{ source.mappingProperty }}</td>
             </tr>
             <tr>
                 <th>{{ 'mapbender.3d.3dtiles.admin.building_id_property' | trans }}:</th>
                 <td>{{ source.buildingIdProperty }}</td>
             </tr>
-            <tr>
-                <th>{{ 'mapbender.3d.3dtiles.admin.roof_color' | trans }}:</th>
-                <td>{% if source.roofColor %}<div class="color-preview" style="--chosen-color: {{ source.roofColor }}"></div>{% endif %}{{ source.roofColor }}</td>
-            </tr>
-            <tr>
-                <th>{{ 'mapbender.3d.3dtiles.admin.wall_color' | trans }}:</th>
-                <td>{% if source.wallColor %}<div class="color-preview" style="--chosen-color: {{ source.wallColor }}"></div>{% endif %}{{ source.wallColor }}</td>
-            </tr>
-            <tr>
-                <th>{{ 'mapbender.3d.3dtiles.admin.selection_color' | trans }}:</th>
-                <td>{% if source.selectionColor %}<div class="color-preview" style="--chosen-color: {{ source.selectionColor }}"></div>{% endif %}{{ source.selectionColor }}</td>
-            </tr>
+            {% if source.mappings is not empty %}
+                <tr>
+                    <td colspan="2">
+                        <h4 class="mt-2">{{ 'mapbender.3d.3dtiles.admin.mappings' | trans }}</h4>
+                    </td>
+                </tr>
+            {% endif %}
+            {% for mapping in source.mappings %}
+                <tr>
+                    <th>{{ mapping.property }}:</th>
+                    <td><div class="color-preview" style="--chosen-color: {{ mapping.value }}"></div>{{ mapping.value }}</td>
+                </tr>
+            {% endfor %}
         {% elseif source.variant == pointCloudVariant %}
             <tr>
                 <th>{{ 'mapbender.3d.3dtiles.admin.point_size' | trans }}:</th>

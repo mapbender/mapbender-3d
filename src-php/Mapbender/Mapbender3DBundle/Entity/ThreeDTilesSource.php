@@ -25,20 +25,35 @@ class ThreeDTilesSource extends Source
     #[ORM\Column(type: Types::ENUM, nullable: false)]
     protected ThreeDTilesVariant $variant = ThreeDTilesVariant::TEXTURED_MESH;
 
-    #[ORM\Column(name: 'surface_property', type: 'string', nullable: true)]
-    private ?string $surfaceProperty = 'surface';
+    #[ORM\Column(name: 'mapping_property', type: 'string', nullable: true)]
+    private ?string $mappingProperty = 'surface';
+
+    #[ORM\Column(name: 'default_color', type: 'string', nullable: true)]
+    private ?string $defaultColor = 'rgb(170, 170, 170)';
+
+    public static function defaultMappings(): array
+    {
+        return [
+            [
+                "property" => "roofColor",
+                "value" => "rgb(255, 80, 80)",
+            ],
+            [
+                "property" => "wallColor",
+                "value" => "rgb(170, 170, 170)",
+            ],
+            [
+                "property" => "selectionColor",
+                "value" => "rgb(91, 154, 227)",
+            ],
+        ];
+    }
+
+    #[ORM\Column(name: 'mappings', type: 'json', nullable: true)]
+    private ?array $mappings = null;
 
     #[ORM\Column(name: 'building_id_property', type: 'string', nullable: true)]
     private ?string $buildingIdProperty = 'gml_id';
-
-    #[ORM\Column(name: 'roof_color', type: 'string', nullable: true)]
-    private ?string $roofColor = 'rgb(255, 80, 80)';
-
-    #[ORM\Column(name: 'wall_color', type: 'string', nullable: true)]
-    private ?string $wallColor = 'rgb(170, 170, 170)';
-
-    #[ORM\Column(name: 'selection_color', type: 'string', nullable: true)]
-    private ?string $selectionColor = 'rgb(91, 154, 227)';
 
     #[ORM\Column(name: 'point_size', type: 'integer', nullable: true)]
     private ?int $pointSize = 2;
@@ -47,6 +62,7 @@ class ThreeDTilesSource extends Source
     {
         parent::__construct();
         $this->setType(ThreeDTilesDataSource::TYPE);
+        $this->mappings = self::defaultMappings();
         $this->instances = new ArrayCollection();
     }
 
@@ -70,14 +86,37 @@ class ThreeDTilesSource extends Source
         $this->variant = $variant;
     }
 
-    public function getSurfaceProperty(): string
+    public function getMappingProperty(): string
     {
-        return $this->surfaceProperty;
+        return $this->mappingProperty;
     }
 
-    public function setSurfaceProperty(string $surfaceProperty): void
+    public function setMappingProperty(string $mappingProperty): void
     {
-        $this->surfaceProperty = $surfaceProperty;
+        $this->mappingProperty = $mappingProperty;
+    }
+
+    public function getDefaultColor(): ?string
+    {
+        return $this->defaultColor;
+    }
+
+    public function setDefaultColor(?string $defaultColor): void
+    {
+        $this->defaultColor = $defaultColor;
+    }
+
+    public function getMappings(): array
+    {
+        return $this->mappings ?? self::defaultMappings();
+    }
+
+    public function setMappings(string|array|null $mappings): void
+    {
+        if (is_string($mappings)) {
+            $mappings = json_decode($mappings, true);
+        }
+        $this->mappings = $mappings;
     }
 
     public function getBuildingIdProperty(): string
@@ -88,36 +127,6 @@ class ThreeDTilesSource extends Source
     public function setBuildingIdProperty(string $buildingIdProperty): void
     {
         $this->buildingIdProperty = $buildingIdProperty;
-    }
-
-    public function getRoofColor(): string
-    {
-        return $this->roofColor;
-    }
-
-    public function setRoofColor(string $roofColor): void
-    {
-        $this->roofColor = $roofColor;
-    }
-
-    public function getWallColor(): string
-    {
-        return $this->wallColor;
-    }
-
-    public function setWallColor(string $wallColor): void
-    {
-        $this->wallColor = $wallColor;
-    }
-
-    public function getSelectionColor(): string
-    {
-        return $this->selectionColor;
-    }
-
-    public function setSelectionColor(string $selectionColor): void
-    {
-        $this->selectionColor = $selectionColor;
     }
 
     public function getPointSize(): int

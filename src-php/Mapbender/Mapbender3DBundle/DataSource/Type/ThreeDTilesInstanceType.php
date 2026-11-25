@@ -9,7 +9,6 @@ use Mapbender\Mapbender3DBundle\Entity\ThreeDTilesSource;
 use Mapbender\Mapbender3DBundle\Entity\ThreeDTilesVariant;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\ColorType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -34,7 +33,6 @@ class ThreeDTilesInstanceType extends AbstractType
         $instance = $options['data'];
         /** @var ThreeDTilesSource $source */
         $source = $instance->getSource();
-
         $builder
             ->add('opacity', IntegerType::class, [
                 'required' => false,
@@ -49,58 +47,50 @@ class ThreeDTilesInstanceType extends AbstractType
                 'label' => 'mb.ogcapifeatures.admin.layer.selected',
             ]);
 
-        if ($source->getVariant() === ThreeDTilesVariant::LOD2) {
-            $this->addLod2Fields($builder, $source);
-        }
-
         if ($source->getVariant() === ThreeDTilesVariant::POINT_CLOUD) {
-            $this->addPointCloudFields($builder, $source);
-        }
-    }
-
-    private function addLod2Fields(FormBuilderInterface $builder, ThreeDTilesSource $source): void
-    {
-        $builder
-            ->add('roofColor', TextType::class, [
+            $builder->add('pointSize', IntegerType::class, [
                 'required' => false,
-                'label' => 'mapbender.3d.3dtiles.admin.roof_color',
+                'label' => 'mapbender.3d.3dtiles.admin.point_size',
                 'attr' => [
-                    'data-variant' => ThreeDTilesVariant::LOD2->value,
-                    'placeholder' => $source->getRoofColor(),
-                    'class' => '-js-init-colorpicker',
-                ],
-            ])
-            ->add('wallColor', TextType::class, [
-                'required' => false,
-                'label' => 'mapbender.3d.3dtiles.admin.wall_color',
-                'attr' => [
-                    'data-variant' => ThreeDTilesVariant::LOD2->value,
-                    'placeholder' => $source->getWallColor(),
-                    'class' => '-js-init-colorpicker',
-                ],
-            ])
-            ->add('selectionColor', TextType::class, [
-                'required' => false,
-                'label' => 'mapbender.3d.3dtiles.admin.selection_color',
-                'attr' => [
-                    'data-variant' => ThreeDTilesVariant::LOD2->value,
-                    'placeholder' => $source->getSelectionColor(),
-                    'class' => '-js-init-colorpicker',
+                    'data-variant' => ThreeDTilesVariant::POINT_CLOUD->value,
+                    'placeholder' => $source->getPointSize(),
                 ],
             ]);
-    }
+        }
 
-    private function addPointCloudFields(FormBuilderInterface $builder, ThreeDTilesSource $source): void
-    {
-        $builder->add('pointSize', IntegerType::class, [
-            'required' => false,
-            'label' => 'mapbender.3d.3dtiles.admin.point_size',
-            'attr' => [
-                'data-variant' => ThreeDTilesVariant::POINT_CLOUD->value,
-                'placeholder' => $source->getPointSize(),
-            ],
-        ]);
+        if ($source->getVariant() === ThreeDTilesVariant::LOD2) {
+            $builder->add('mappingProperty', TextType::class, [
+                'required' => false,
+                'label' => 'mapbender.3d.3dtiles.admin.mapping_property',
+                'attr' => [
+                    'data-variant' => ThreeDTilesVariant::LOD2->value,
+                    'placeholder' => $source->getMappingProperty(),
+                ],
+            ])
+                ->add('defaultColor', TextType::class, [
+                    'required' => false,
+                    'label' => 'mapbender.3d.3dtiles.admin.default_color',
+                    'attr' => [
+                        'data-variant' => ThreeDTilesVariant::LOD2->value,
+                        'placeholder' => $source->getDefaultColor(),
+                        'class' => '-js-init-colorpicker',
+                    ],
+                ]);
+
+            foreach ($source->getMappings() as $index => $mapping) {
+                $property = $mapping['property'];
+                $builder->add('mappingColor' . $index, TextType::class, [
+                    'required' => false,
+                    'label' => $property,
+                    'property_path' => 'mappingColors[' . $property . ']',
+                    'attr' => [
+                        'data-variant' => ThreeDTilesVariant::LOD2->value,
+                        'placeholder' => $mapping['value'],
+                        'class' => '-js-init-colorpicker',
+                    ],
+                ]);
+            }
+        }
     }
 
 }
-
