@@ -8,6 +8,8 @@
         READY: 'ready',
         VIEW_CHANGED: 'viewChanged',
         EXIT_3D: "exit3d",
+        UPDATE_LAYERTREE: "updateLayerTree",
+        ERROR: "error",
     };
 
     class Mb3DView extends MapbenderElement {
@@ -23,7 +25,16 @@
             this.applyOnNext3dView = false;
             this.closeSyncTimer = null;
             this.mapViewChangeProxy = null;
+            this.mapSourceChangeProxy = null;
             this.messageProxy = null;
+            this.resendLayertreeOn = [
+                'mbmapsourceadded',
+                'mbmapsourcechanged',
+                'mbmapsourceremoved',
+                'mbmapsourcelayersreordered',
+                'mbmapsourcesreordered',
+                'mbmapsourcelayerremoved'
+            ].join(' ');
 
             Mapbender.elementRegistry.waitReady('.mb-element-map').then(
                 (mbMap) => this._setup(mbMap)
@@ -40,13 +51,10 @@
             this.$toggle.on('click', this._toggle.bind(this));
             this.$frame.on('load', this._handleFrameLoad.bind(this));
 
-            this.mapViewChangeProxy = this._handleMapViewChanged.bind(this);
-            this.mbMap.element.on('mbmapviewchanged', this.mapViewChangeProxy);
-
             this.messageProxy = this._handleFrameMessage.bind(this);
             window.addEventListener('message', this.messageProxy);
 
-            this._trigger('ready');
+            Mapbender.elementRegistry.markReady(this);
         }
 
         _destroy() {
@@ -77,24 +85,50 @@
             this.$toggle.attr('aria-pressed', 'true').addClass('is-active');
             this.$panel.removeClass('-hidden');
             this.$toggle.addClass("hidden");
+            this._addListeners();
+            this.mbMap.model.updateDisplayMode('3d');
 
             if (!this.frameLoaded) {
                 this.$frame.attr('src', this.options.iframeUrl);
+                this._postLayertree();
             } else {
                 this._sendInitView();
             }
+        }
+
+        _close() {
+            this.isActive = false;
+            this.$toggle.attr('aria-pressed', 'false').removeClass('is-active');
+            this.$panel.addClass('-hidden');
+            this.$toggle.removeClass('hidden');
+
+            this.mbMap.model.updateDisplayMode('ol');
+            this._removeListeners();
         }
 
         deactivate() {
             if (!this.isActive) {
                 return;
             }
-            this.isActive = false;
-            this.$toggle.attr('aria-pressed', 'false').removeClass('is-active');
-            this.$panel.addClass('-hidden');
-            this.$toggle.removeClass("hidden");
-
             this._request3dViewForCloseSync();
+            this._close();
+        }
+
+        _addListeners() {
+            this.mapSourceChangeProxy = this._postLayertree.bind(this);
+            this.mbMap.element.on(this.resendLayertreeOn, this.mapSourceChangeProxy);
+
+            this.mapViewChangeProxy = this._handleMapViewChanged.bind(this);
+            this.mbMap.element.on('mbmapviewchanged', this.mapViewChangeProxy);
+        }
+
+        _removeListeners() {
+            if (this.mapSourceChangeProxy) {
+                this.mbMap.element.off(this.resendLayertreeOn, this.mapSourceChangeProxy);
+            }
+            if (this.mapViewChangeProxy) {
+                this.mbMap.element.off('mbmapviewchanged', this.mapViewChangeProxy);
+            }
         }
 
         _handleFrameLoad() {
@@ -112,9 +146,6 @@
         }
 
         _handleFrameMessage(event) {
-            if (!this.frameLoaded) {
-                return;
-            }
             if (event.origin !== window.location.origin) {
                 return;
             }
@@ -124,6 +155,23 @@
 
             var data = event.data || {};
             if (data.channel !== CHANNEL || !data.type) {
+                return;
+            }
+
+            if (data.type === MESSAGE_TYPES.ERROR) {
+                const payload = data.payload;
+                if (!payload || typeof payload !== 'object' || Array.isArray(payload) ||
+                    typeof payload.message !== 'string' || !payload.message.trim() ||
+                    (payload.layerId !== undefined && typeof payload.layerId !== 'string') ||
+                    (payload.layerName !== undefined && typeof payload.layerName !== 'string')) {
+                    return;
+                }
+                const layer = payload.layerName || payload.layerId;
+                Mapbender.error(layer ? `3D (${layer}): ${payload.message}` : `3D: ${payload.message}`);
+                return;
+            }
+
+            if (!this.frameLoaded) {
                 return;
             }
 
@@ -155,10 +203,7 @@
                 window.clearTimeout(this.closeSyncTimer);
                 this.closeSyncTimer = null;
             }
-            this.isActive = false;
-            this.$toggle.attr('aria-pressed', 'false').removeClass('is-active');
-            this.$panel.addClass('-hidden');
-            this.$toggle.removeClass('hidden');
+            this._close();
         }
 
         _request3dViewForCloseSync() {
@@ -185,6 +230,20 @@
                 return;
             }
             this._postToFrame(MESSAGE_TYPES.INIT_VIEW, payload);
+            this._postLayertree();
+        }
+
+        _postLayertree() {
+            const layertree = this._getLayertreePayload();        ;
+            this._postToFrame(MESSAGE_TYPES.UPDATE_LAYERTREE, layertree);
+        }
+
+        _getLayertreePayload() {
+            return Mapbender.Model.sourceTree.map((source) => {
+                if (!source.getSelected()) return null;
+                if (!source.supportsMode('3d')) return null;
+                return source.toJSON('3d');
+            }).filter((source) => source !== null);
         }
 
         _collect2dViewFor3d() {

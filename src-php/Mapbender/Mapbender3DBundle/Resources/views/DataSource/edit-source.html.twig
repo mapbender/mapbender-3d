@@ -1,0 +1,12 @@
+{%- extends '@MapbenderManager/layouts/single_form.html.twig' -%}
+{% if reload %}
+    {%- set title = ('mb.manager.source.update' | trans) ~ ' (' ~ type_label ~ ')' -%}
+{% else %}
+    {%- set title = (source_label | trans) ~ ' ' ~ ('mb.manager.source.add' | trans) -%}
+{% endif %}
+
+
+{% block js %}
+    {{ parent() }}
+    <script type="application/javascript" src="{{ asset('bundles/mapbender3d/js/manager/conditional-fields.js') }}"></script>
+{% endblock %}

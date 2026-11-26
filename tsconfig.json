@@ -23,7 +23,7 @@
         "noFallthroughCasesInSwitch": true,
         "paths": {
             "@deck.gl/geo-layers/dist/mesh-layer/mesh-layer.js": [
-                "./node_modules/@deck.gl/geo-layers/dist/mesh-layer/mesh-layer.js"
+                "./node_modules/@deck.gl/geo-layers/dist/mesh-layer/mesh-layer.d.ts"
             ]
         }
     },

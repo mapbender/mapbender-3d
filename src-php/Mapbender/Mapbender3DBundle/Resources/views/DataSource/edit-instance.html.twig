@@ -1,0 +1,32 @@
+{% extends "@MapbenderManager/Repository/instance.html.twig" %}
+
+{% block form_main2 %}
+    {{ parent() }}
+    <div class="row g-3 mb-3">
+        <div class="col">
+            {{ form_widget(form.selected) }}
+        </div>
+        <div class="col">
+            {{ form_widget(form.allowSelected) }}
+        </div>
+    </div>
+    {% if form.roofColor is defined %}
+        {{ form_row(form.roofColor) }}
+    {% endif %}
+    {% if form.wallColor is defined %}
+        {{ form_row(form.wallColor) }}
+    {% endif %}
+    {% if form.selectionColor is defined %}
+        {{ form_row(form.selectionColor) }}
+    {% endif %}
+    {% if form.pointSize is defined %}
+        {{ form_row(form.pointSize) }}
+    {% endif %}
+{% endblock %}
+
+{% block js %}
+    {{ parent() }}
+    <script type="text/javascript" src="{{ asset('bundles/mapbendermanager/js/application-edit.js') }}"></script>
+    <script src="{{ asset('bundles/mapbendermanager/js/style-utils.js') }}"></script>
+    <script src="{{ asset('bundles/mapbendercore/widgets/tabcontainer.js') }}"></script>
+{% endblock %}

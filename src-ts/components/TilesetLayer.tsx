@@ -1,0 +1,25 @@
+import { useCallback } from "react";
+import { Ml3DTileLayer } from "@mapcomponents/deck-gl";
+import type { PointCloudSource, TexturedMeshSource } from "../config/layers";
+import type { LayerStatusHandler } from "./ConfiguredTilesLayers";
+import useTilesetRoot from "../config/useTilesetRoot";
+
+export default function TilesetLayer({ source, onStatus }: {
+  source: TexturedMeshSource | PointCloudSource;
+  onStatus: LayerStatusHandler;
+}) {
+  const onTileLoad = useCallback(() => onStatus(source, "loaded"), [onStatus, source.id, source.type, source.url]);
+  const loadOptions = useTilesetRoot(source, onStatus);
+  if (!loadOptions) return null;
+  return <Ml3DTileLayer
+    mapId="3d-map"
+    id={source.id}
+    data={source.url}
+    opacity={source.opacity}
+    {...(source.type === "pointcloud" ? { pointSize: source.pointSize } : {})}
+    loadOptions={loadOptions}
+    onTileLoad={onTileLoad}
+    onError={(error) => { onStatus(source, "error", error.message); return true; }}
+    onTileError={(_tile, message) => onStatus(source, "error", String(message))}
+  />;
+}

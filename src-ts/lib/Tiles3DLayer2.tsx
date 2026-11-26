@@ -18,6 +18,7 @@ import {
   FilterContext,
   GetPickingInfoParams,
   Layer,
+  LayerContext,
   LayersList,
   log,
   PickingInfo,
@@ -41,6 +42,19 @@ export type Enhanced3DTilePickingInfo = PickingInfo & {
 };
 
 const SINGLE_DATA = [0];
+
+// deck.gl's MeshLayer passes vec4(0) as vertex color to luma's pbr_filterColor, which now multiplies by it (alpha 0).
+class FeatureMeshLayer<DataT = any> extends MeshLayer<DataT> {
+  static layerName = 'FeatureMeshLayer';
+
+  getShaders() {
+    const shaders = super.getShaders();
+    return {
+      ...shaders,
+      fs: shaders.fs.replace('vColor * pbr_filterColor(vec4(0))', 'pbr_filterColor(vColor)'),
+    };
+  }
+}
 
 export type Tile3DLayer2Props<DataT = unknown> = _Tile3DLayer2Props<DataT> &
   CompositeLayerProps;
@@ -119,8 +133,9 @@ export default class Tile3DLayer2<
 
   updateState({props, oldProps, changeFlags}: UpdateParameters<this>): void {
     if (props.data && props.data !== oldProps.data) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      this._loadTileset(props.data);
+      void this._loadTileset(props.data).catch((error: unknown) => {
+        this.raiseError(error instanceof Error ? error : new Error(String(error)), 'loading tileset');
+      });
     }
     if (changeFlags.viewportChanged) {
       const {activeViewports} = this.state;
@@ -136,6 +151,11 @@ export default class Tile3DLayer2<
       }
       this.setNeedsUpdate();
     }
+  }
+
+  finalizeState(context: LayerContext): void {
+    this.state.tileset3d?.destroy();
+    super.finalizeState(context);
   }
 
   activateViewport(viewport: Viewport): void {
@@ -207,6 +227,7 @@ export default class Tile3DLayer2<
     }
 
     const tilesetJson = await load(actualTilesetUrl, loader, options.loadOptions);
+    if (!this.internalState) return;
     const tileset3d = new Tileset3D(tilesetJson, {
       onTileLoad: this._onTileLoad.bind(this),
       onTileUnload: this._onTileUnload.bind(this),
@@ -413,7 +434,7 @@ export default class Tile3DLayer2<
       (!getFeatureColor && oldLayer && oldLayer.props.mesh) ||
       new Geometry({topology: 'triangle-list', attributes: mergedAttributes, indices});
 
-    const SubLayerClass = this.getSubLayerClass('mesh', MeshLayer);
+    const SubLayerClass = this.getSubLayerClass('mesh', FeatureMeshLayer);
     return new SubLayerClass(
       this.getSubLayerProps({id: 'mesh'}),
       {

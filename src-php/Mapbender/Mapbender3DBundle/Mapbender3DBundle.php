@@ -14,5 +14,6 @@ class Mapbender3DBundle extends Bundle
         $configLocator = new FileLocator(__DIR__ . '/Resources/config');
         $loader = new XmlFileLoader($container, $configLocator);
         $loader->load('elements.xml');
+        $loader->load('services.xml');
     }
 }

@@ -22,6 +22,11 @@ composer require "mapbender/mapbender-3d"
 The module is a regular symfony bundle. Its source is in `src-php`. The bundle supplies the ThreeDView element that shows a button (to switch to the 3D view) as well as the iframe to include
 the MapComponents application.
 
+The Mapbender layer tree controls which 3D sources are rendered and supplies their settings.
+The iframe has no layer configuration editor and starts with an empty layer configuration until
+Mapbender sends its sources. Configuration and tileset loading errors are sent to the same-origin
+parent and displayed through Mapbender's error notifications. 
+
 ## Development - MapComponents
 
 ```bash

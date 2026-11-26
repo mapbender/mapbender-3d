@@ -4,3 +4,18 @@ mapbender.3d:
         description: 3D-View as an overlay to the 2d map with synchronisation.
         admin:
             button_label: Button Label
+    3dtiles:
+        no-layers: No layers available for this source.
+        admin:
+          json_url: URL to 3D-Tiles-JSON
+          variant: Variant
+          surface_property: Surface Property
+          building_id_property: Building Id Property
+          roof_color: Roof Color
+          wall_color: Wall Color
+          selection_color: Selection Color
+          point_size: Point Size
+        variant:
+            lod2: LOD2
+            textured_mesh: Textured Mesh
+            pointcloud: Point Cloud

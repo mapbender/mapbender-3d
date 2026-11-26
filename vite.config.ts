@@ -5,6 +5,7 @@ import path from 'path'
 // https://vitejs.dev/config/
 export default defineConfig({
     base: './',
+    publicDir: 'src-ts/public',
     plugins: [
         react({
             // Exclude custom deck.gl layer files from Babel
