@@ -1,5 +1,7 @@
 class ThreeDTilesSource extends Mapbender.Source {
 
+    cachedFeatureInfo = {};
+
     constructor(definition) {
         definition.children = [{
             ...definition,
@@ -32,8 +34,80 @@ class ThreeDTilesSource extends Mapbender.Source {
         return this.getRootLayer().state.info;
     }
 
+    cacheFeatureInfo(click, properties) {
+        this.cachedFeatureInfo[click.x + "/" + click.y] = properties;
+        console.log(this.cachedFeatureInfo);
+    }
+
     loadFeatureInfo(mapModel, x, y, options, elementId) {
-        return [null, Promise.resolve([])];
+        console.log(mapModel, x, y, options);
+
+        if (this.cachedFeatureInfo && this.cachedFeatureInfo[x + "/" + y]) {
+            const properties = this.cachedFeatureInfo[x + "/" + y];
+            const featureContent = this.createFeatureInfoForProperties(properties, x, y, mapModel.getCurrentProjectionCode());
+            if (featureContent) {
+                const content = document.createElement('div');
+                content.appendChild(featureContent);
+                Mapbender?.FeatureInfo?.setupHighlight(content, this.id, elementId);
+                return [null, Promise.resolve(content)];
+            }
+        }
+
+        return [null, Promise.resolve(null)];
+    }
+
+    createFeatureInfoForProperties(properties, x, y, epsg) {
+        const featureInfo = this.options.featureInfo;
+        const label = properties.label || properties.name || properties.title || properties[this.options.buildingIdProperty];
+
+        if (!label && featureInfo?.hideIfNoTitle) return null;
+
+        const geometryDiv = document.createElement('div');
+        geometryDiv.className = 'geometryElement';
+        geometryDiv.id = this.options.id + '/' + x + '/' + y;
+        geometryDiv.setAttribute('data-geometry', `POINT (${x} ${y})`);
+        geometryDiv.setAttribute('data-srid', epsg);
+        geometryDiv.setAttribute('data-label', label);
+
+        if (label) {
+            const h5 = document.createElement('h5');
+            h5.className = 'featureinfo__title';
+            h5.textContent = label;
+            geometryDiv.appendChild(h5);
+        }
+
+        const table = document.createElement('table');
+        table.className = 'table table-striped table-bordered table-condensed featureinfo__table';
+        const tbody = document.createElement('tbody');
+        table.appendChild(tbody);
+
+        let propertyMap = null;
+        if (featureInfo?.propertyMap) {
+            propertyMap = {};
+            for (const entry of featureInfo.propertyMap) {
+                if (typeof entry === 'string') {
+                    propertyMap[entry] = Mapbender.trans(entry);
+                } else {
+                    const [key, value] = Object.entries(entry)[0];
+                    propertyMap[key] = Mapbender.trans(value);
+                }
+            }
+        }
+        Object.entries(properties).forEach(([key, value]) => {
+            if (propertyMap && !propertyMap[key]) return;
+
+            const row = document.createElement('tr');
+            const headerCell = document.createElement('th');
+            headerCell.textContent = propertyMap?.[key] || key;
+            const dataCell = document.createElement('td');
+            dataCell.textContent = value;
+            row.appendChild(headerCell);
+            row.appendChild(dataCell);
+            tbody.appendChild(row);
+        });
+
+        geometryDiv.appendChild(table);
+        return geometryDiv;
     }
 
     supportsMode(mode) {

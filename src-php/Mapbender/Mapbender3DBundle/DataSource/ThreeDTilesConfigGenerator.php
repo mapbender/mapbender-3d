@@ -29,8 +29,7 @@ class ThreeDTilesConfigGenerator extends SourceInstanceConfigGenerator
                 '@Mapbender3DBundle/Resources/public/js/three_d_tiles/geosource.3d_tiles.source.js',
                 '@Mapbender3DBundle/Resources/public/js/three_d_tiles/geosource.3d_tiles.source-layer.js',
             ],
-            'css' => [
-            ],
+            'css' => [],
             default => [],
         };
     }
@@ -49,8 +48,10 @@ class ThreeDTilesConfigGenerator extends SourceInstanceConfigGenerator
             'variant' => $source->getVariant()->value,
             'treeOptions' => [
                 'selected' => $sourceInstance->getSelected(),
+                'info' => true,
                 'allow' => [
                     'selected' => $sourceInstance->getAllowSelected(),
+                    'info' => true,
                 ],
             ],
         ];

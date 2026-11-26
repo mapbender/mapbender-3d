@@ -130,7 +130,7 @@
             this.deActivateFeatureInfoProxy = (event, data) => {
                 this._postToFrame(MESSAGE_TYPES.UPDATE_FEATUREINFO_STATE, false);
             }
-            $(document).on('mapbender.activate-feature-info', this.deActivateFeatureInfoProxy);
+            $(document).on('mapbender.deactivate-feature-info', this.deActivateFeatureInfoProxy);
         }
 
         _removeListeners() {
@@ -175,6 +175,8 @@
                 return;
             }
 
+            console.log("RECEIVE Message", data.type, data.payload);
+
             if (data.type === MESSAGE_TYPES.ERROR) {
                 const payload = data.payload;
                 if (!payload || typeof payload !== 'object' || Array.isArray(payload) ||
@@ -184,7 +186,7 @@
                     return;
                 }
                 const layer = payload.layerName || payload.layerId;
-                Mapbender.error(layer ? `3D (${layer}): ${payload.message}` : `3D: ${payload.message}`);
+                Mapbender.error(layer ? `3D (${ layer }): ${ payload.message }` : `3D: ${ payload.message }`);
                 return;
             }
 
@@ -192,11 +194,14 @@
                 return;
             }
 
-            if (data.type === MESSAGE_TYPES.EXIT_3D && data.payload) {
-                this._apply3dViewTo2d(data.payload);
+            if (data.type === MESSAGE_TYPES.EXIT_3D) {
+                if (data.payload) {
+                    this._apply3dViewTo2d(data.payload);
+                }
                 this._closeFromIframeSwitch();
                 return;
             }
+
             if (data.type === MESSAGE_TYPES.VIEW_CHANGED && data.payload) {
                 this.last3dView = data.payload;
                 if (this.applyOnNext3dView) {
@@ -217,18 +222,19 @@
                 const coordsTransformed = Mapbender.mapEngine.transformCoordinate({
                     x: payload.click[0],
                     y: payload.click[1]
-                }, 'EPSG:4326', this.map.model.getCurrentProjectionCode());
-
-                onFeatureInfoCallback(coordsTransformed.x, coordsTransformed.y);
+                }, 'EPSG:4326', Mapbender.Model.getCurrentProjectionCode());
 
                 const info = payload.info;
-                for (const source of info) {
-                    const sourceId = source.layer_id;
-                    const properties = source.properties;
-                    console.log('Showing Feature Info for source:', sourceId, 'with properties:', properties);
-                    // TODO: finish the implementation to show feature info in the Mapbender application
-                    const sourceElement = Mapbender.Model.getSourceById(sourceId);
-                }
+                // TODO: this must be an array later
+                //for (const source of info) {
+                const source = info;
+                const sourceId = source.layer_id;
+                const properties = source.properties;
+                const sourceElement = Mapbender.Model.getSourceById(sourceId);
+                sourceElement.cacheFeatureInfo(coordsTransformed, properties);
+                //}
+
+                this.onFeatureInfoCallback(coordsTransformed.x, coordsTransformed.y);
             }
 
         }
@@ -267,10 +273,17 @@
             }
             this._postToFrame(MESSAGE_TYPES.INIT_VIEW, payload);
             this._postLayertree();
+            Mapbender.elementRegistry.waitReady('.mb-element-featureinfo').then((fi) => {
+                this._postToFrame(MESSAGE_TYPES.UPDATE_FEATUREINFO_STATE, fi.isActive);
+                if (fi.isActive) {
+                    this.onFeatureInfoCallback = (x, y) => fi._triggerFeatureInfo(x, y);
+                }
+            });
         }
 
         _postLayertree() {
-            const layertree = this._getLayertreePayload();        ;
+            const layertree = this._getLayertreePayload();
+            ;
             this._postToFrame(MESSAGE_TYPES.UPDATE_LAYERTREE, layertree);
         }
 
@@ -339,6 +352,7 @@
             if (!frame || !frame.contentWindow) {
                 return;
             }
+            console.log("POST Message", type, payload);
             frame.contentWindow.postMessage({
                 channel: CHANNEL,
                 type: type,
