@@ -1,17 +1,15 @@
-import { useCallback, useState } from "react";
 import {
     MapLibreMap,
     MlNavigationTools,
     useMap,
 } from "@mapcomponents/react-maplibre";
 import { Button, Typography } from "@mui/material";
-import ConfiguredTilesLayers, { sourceKey } from "./components/ConfiguredTilesLayers";
-import type { LayerStatus, LayerStatusHandler } from "./components/ConfiguredTilesLayers";
-import LayerTree from "./components/LayerTree";
+import ConfiguredTilesLayers from "./components/ConfiguredTilesLayers";
 import useLayersConfig from "./config/useLayersConfig";
 import Light from "./Light";
 import useMapViewBridge from "./context/useMapViewBridge";
 import useLayerTreeBridge from "./context/useLayerTreeBridge";
+import useLayerErrorBridge from "./context/useLayerErrorBridge";
 
 const primaryButtonStyle = {
     minWidth: "48px",
@@ -45,12 +43,7 @@ const App = () => {
     const { config, replaceConfig, error } = useLayersConfig();
     const exit3d = useMapViewBridge(mapHook.map);
     useLayerTreeBridge(replaceConfig);
-    const [statuses, setStatuses] = useState<Record<string, LayerStatus>>({});
-    const onStatus: LayerStatusHandler = useCallback((source, state, message) => {
-        const key = sourceKey(source);
-        setStatuses((previous) => previous[key]?.state === state && previous[key]?.message === message
-            ? previous : { ...previous, [key]: { state, message } });
-    }, []);
+    const onStatus = useLayerErrorBridge(config, error);
 
     return (
         <>
@@ -77,7 +70,6 @@ const App = () => {
                     }}
                 />
                 <ConfiguredTilesLayers config={config} onStatus={onStatus} />
-                <LayerTree config={config} onChange={replaceConfig} error={error} statuses={statuses} />
                 <Light />
                 <MlNavigationTools
                     showZoomButtons
